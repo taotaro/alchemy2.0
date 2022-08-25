@@ -148,19 +148,8 @@ def split_train_test(df, df2, same_train_test=False):
     return df_train, df_valid, df_test
 
 
-def run_model(
-    df,
-    df2,
-    kmeans_df,
-    kmeans_df2,
-    cluster_cols,
-    nodes,
-    regularizer,
-    dropout,
-    epochs,
-    batch_size,
-    same_train_test=False,
-):
+def run_model(df, df2, kmeans_df, kmeans_df2, cluster_cols, nodes,
+    regularizer, dropout, epochs, batch_size, same_train_test=False):
     df = add_clusters_df(df, kmeans_df, cluster_cols)
     df2 = add_clusters_df(df2, kmeans_df2, cluster_cols)
     datasets = split_train_test(df, df2, same_train_test)
@@ -186,39 +175,3 @@ def run_model(
         batch_size,
     )
     reports = get_reports(model, X_test, y_test)
-
-
-# HOW TO USE LIBRARYb
-
-# data saved in title_analysis and kmeans used here
-# only need to change df_train, df_test is a random constant file (df_test only needs to be changed when the model is tested with a different vertical than the one it is trained with)
-# top_10 needs to be modified depending on number of clusters used
-# Note: in the run_model function, set same_train_test=True (unless you change the file for df_test)
-
-df_train = pd.read_csv("healthcare_data.csv", index_col=0)
-df_test = pd.read_csv("df_title_test.csv", index_col=0)
-
-kmeans_train = pd.read_csv("clusters_healthcare.csv", index_col=0)
-kmeans_test = pd.read_csv("KMeans_test_data.csv", index_col=0)
-
-top_10 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-nodes = 32
-regularizer = 0.01
-dropout = 0.2
-epochs = 1000
-batch_size = 30
-
-test = run_model(
-    df_train,
-    df_test,
-    kmeans_train,
-    kmeans_test,
-    top_10,
-    nodes,
-    regularizer,
-    dropout,
-    epochs,
-    batch_size,
-    same_train_test=True,
-)

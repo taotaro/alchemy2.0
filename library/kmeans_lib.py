@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 
+# set up warning settings
 warnings.filterwarnings("ignore")
-
 
 def process_data(df, column):
     X = df[column]
@@ -35,6 +35,8 @@ def elbow_method(k_clusters, X, max_iter, n_init):
         )
         kmeans.fit(X)
         score.append(kmeans.inertia_)
+
+    # set plot graph labels
     plt.plot(range(1, k_clusters + 1), score)
     plt.title("The Elbow Method")
     plt.xlabel("Number of clusters")
@@ -103,19 +105,10 @@ def get_kmeans_clusters(k_clusters, dataset, csv_name, n_feats):
     X = dataset[0]
     X_vc = dataset[1]
     kmeans_data = kmeans_clustering(k_clusters, 10, 600, 0.000001, X_vc, X)
-    kmeans_data.to_csv(csv_name + ".csv")
+    kmeans_data.to_csv("results/" + csv_name)
     dfs_train = get_top_features_cluster(
         dataset[2], kmeans_data["Cluster"], X_vc.toarray(), n_feats
     )
     plot_words(dfs_train, n_feats)
     return kmeans_data
 
-
-# HOW TO USE LIBRARY
-
-# kmeans csv saved using title_analysis is used here
-# at the moment, the algorithm uses a constant of 10 clusters
-
-df_train = pd.read_csv("kmeans_healthcare_data.csv")
-test = get_optimal_clusters(df_train, "Title", 10)
-get_kmeans_clusters(10, test, "clusters_healthcare", 4)

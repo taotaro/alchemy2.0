@@ -13,7 +13,7 @@ stop_words = set(stopwords.words("english"))
 warnings.filterwarnings("ignore")
 
 # check if brand_name (extracted from API) exists in the title
-def brand_name_in_title(title, brand):
+def has_brand_name(title, brand):
     if brand not in title:
         return False
     else:
@@ -23,11 +23,20 @@ def brand_name_in_title(title, brand):
 def has_numbers(title):
     return any(char.isdigit() for char in title)
 
+# remove brand name from title
+def remove_brand_name(title_data, brand_data):
+    # initialize
+    title_wo_brand = []
+
+    for i in range(len(title_data)):
+        new_title = title_data[i].replace(str(brand_data[i]), "")
+        title_wo_brand.append(new_title)
+    return title_wo_brand
+
 # classifies title as neutral, positive, or negative
 def sentiment_analysis(title_data):
-    data["sentiment_score"] = title_data.apply(
-        lambda x: TextBlob(str(x)).sentiment.polarity
-    )
+    data = []
+    data["sentiment_score"] = title_data.apply(lambda x: TextBlob(str(x)).sentiment.polarity)
     data["sentiment"] = np.select(
         [
             data["sentiment_score"] < 0,
@@ -77,17 +86,8 @@ def balance_df(df_title):
     return df_title_new
 
 
-# compile all lists into a df
-def make_df(
-    product_id,
-    brand_in_title,
-    mood,
-    number_in_title,
-    bog,
-    mall_label_in_title,
-    sales,
-    title_len,
-):
+# compile all lists into a dataframe
+def make_df(product_id, brand_in_title, mood, number_in_title, bog, mall_label_in_title, sales, title_len):
     df = pd.DataFrame(
         {
             "Product_id": product_id,
@@ -98,26 +98,18 @@ def make_df(
             "Label_in_title": mall_label_in_title,
         }
     )
-    df_title = pd.concat(
-        [df.reset_index(drop=True), bog.reset_index(drop=True)], axis=1
-    )
+
+    df_title = pd.concat([df.reset_index(drop=True), bog.reset_index(drop=True)], axis=1)
     df_title.insert(len(df_title.columns), "Sales", sales)
     df_title = balance_df(df_title)
+
     return df_title
 
 
 # make a df with the title included
-def df_with_title(
-    product_id,
-    brand_in_title,
-    mood,
-    number_in_title,
-    bog,
-    mall_label_in_title,
-    sales,
-    title_len,
-    title_data,
-):
+def df_with_title(product_id, brand_in_title, mood, number_in_title, bog, 
+                  mall_label_in_title, sales, title_len, title_data):
+    # initialize
     title_list = []
     for i in title_data:
         title_list.append(i)
@@ -133,6 +125,7 @@ def df_with_title(
             "Label_in_title": mall_label_in_title,
         }
     )
+
     df_title = pd.concat(
         [df.reset_index(drop=True), bog.reset_index(drop=True)], axis=1
     )
@@ -142,19 +135,11 @@ def df_with_title(
     return df_title
 
 
-# remove brand name from title
-def remove_brand(title_data, brand_data):
-    title_wo_brand = []
-    for i in range(len(title_data)):
-        new_title = title_data[i].replace(str(brand_data[i]), "")
-        title_wo_brand.append(new_title)
-    return title_wo_brand
-
-
-# preprocess title for clustering (remove brand name, numbers, symbols and stopwords)
-def preprocessed_title(title_data, brand_data):
-    title_data_new = remove_brand(title_data, brand_data)
+# preprocess title for clustering (remove brand name, numbers, symbols, and stopwords)
+def preprocess_title(title_data, brand_data):
+    title_data_new = remove_brand_name(title_data, brand_data)
     title_list = []
+
     for i in range(len(title_data_new)):
         title = word_tokenize(title_data_new[i])
         word_list = []
@@ -185,15 +170,13 @@ def classify_sales(sales_data):
 
 
 # main function
-def title_analysis(
-    title_data, brand_data, label_data, id_data, sales_data, title_include=False
-):
+def title_analysis(title_data, brand_data, label_data, id_data, sales_data, title_include=False):
+  # initialize
     is_brand_in_title = []
     mood_list = []
     number_in_title = []
     mall_label_in_title = []
     item_id_list = []
-
     title_len_list = []
 
     mood = sentiment_analysis(title_data)
@@ -201,18 +184,14 @@ def title_analysis(
 
     sales_list = classify_sales(sales_data)
 
-    # print(test)
     for i in range(len(title_data)):
         item_id_list.append(id_data[i])
 
-        words = sum(
-            [i.strip(string.punctuation).isalpha() for i in title_data[i].split()]
-        )
+        words = sum([i.strip(string.punctuation).isalpha() for i in title_data[i].split()])
 
         title_len_list.append(str(words))
 
-        # print(title_data[i])
-        brand_title = brand_name_in_title(title_data[i], brand_data[i])
+        brand_title = has_brand_name(title_data[i], brand_data[i])
         if brand_title:
             is_brand_in_title.append(1)
         else:
@@ -263,8 +242,7 @@ def title_analysis(
 
 # save df to csv
 def df_to_csv(data, csv_name, title_include=False, only_title=False):
-
-    # retrive all columns
+    # retrieve all columns
     title_data = data["item_basic.name"]
     brand_data = data["item_basic.brand"]
     label_data = data["item_basic.show_official_shop_label_in_title"]
@@ -273,32 +251,14 @@ def df_to_csv(data, csv_name, title_include=False, only_title=False):
 
     brand_data = brand_data.fillna("")
     if only_title:
-        title_list = preprocessed_title(title_data, brand_data)
+        title_list = preprocess_title(title_data, brand_data)
         sales_list = classify_sales(sales_data)
-        df = pd.DataFrame(
-            {"Title": title_list, "Product_id": id_data, "Sales": sales_list}
-        )
+        df = pd.DataFrame({"Title": title_list, "Product_id": id_data, "Sales": sales_list})
         df = balance_df(df)
     else:
-        df = title_analysis(
-            title_data, brand_data, label_data, id_data, sales_data, title_include
-        )
-    df.to_csv(csv_name + ".csv")
+        df = title_analysis(title_data, brand_data, label_data, id_data, sales_data, title_include)
+
+    # create csv file from dataframe
+    df.to_csv("results/" + csv_name)
+
     return df
-
-#HOW TO USE LIBRARY
-
-# df_to_csv is the only function you have to call
-# the attributes are:
-# 1. Data
-# 2. csv file name (save it so its easy to identify the vertical and what the data is used for)
-# 3. title_include (for dnn and kmeans not necessary, but gives ease of access)
-# 4. only_title (this attribute is only used for saving data which is used in kmeans)
-# Note: df_to_csv(data, '{provide csv file name}') --- is the method used for producing data used in dnn
-# df_to_csv(data, '{provide csv file name}', only_title=True) --- is the method used for producing data used in kmeans
-# create and save both csvs' for each vertical
-
-# declare the dataset/vertical
-data = pd.read_csv("Healthcare.csv")
-# get df (pass data, name of csv, whether title should be included in the df and if only title should be included in df)
-df_to_csv(data, "kmeans_healthcare_data", only_title=True).head()
