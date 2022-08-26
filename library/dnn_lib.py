@@ -129,8 +129,7 @@ def get_vectors(df, drop_cols):
 def get_reports(model, X_test, y_test, csv_name):
     classification_report=metrics_classification_report(X_test, y_test, model)
     confusion_matrix=metrics_confusion_matrix(X_test, y_test, model)
-    name_file=csv_name+'.txt'
-    file1=open(name_file, "w")
+    file1=open(csv_name, "w")
     file1.write(str(classification_report))
     file1.write(str(confusion_matrix))
     file1.close()
