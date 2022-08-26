@@ -145,7 +145,7 @@ def api_product_list(keyword, limit_items="60", newest="0", order="desc", page_t
         return
 
 
-def get_category_names(output_file_path=constants.SHOPEE_CATEGORY_TREE_LIST_PATH):
+def get_category_names(output_file_path=constants.PRODUCT_LIST_CATEGORY_PATH):
     '''
     This function calls the shopee API to get category names and saves it as .csv file
     Parameters:
@@ -320,11 +320,11 @@ def get_category_search(category_name=constants.CATEGORY_NAME, sub_cat_choice=5,
     saved_sub_categories = []
 
     # check if categories.csv file exist
-    if not os.path.exists(f"{constants.SHOPEE_CATEGORY_TREE_LIST_PATH}/{time_str}-categories.csv"):
+    if not os.path.exists(f"{constants.PRODUCT_LIST_CATEGORY_PATH}/{time_str}-categories.csv"):
         get_category_names()
 
     # read file with category names, sub category and id
-    category = pd.read_csv(f"{constants.SHOPEE_CATEGORY_TREE_LIST_PATH}/{time_str}-categories.csv")
+    category = pd.read_csv(f"{constants.PRODUCT_LIST_CATEGORY_PATH}/{time_str}-categories.csv")
     category_list = literal_eval(category[category_name][0])
 
     # iterate through each subcategory

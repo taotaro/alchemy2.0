@@ -13,7 +13,7 @@ PRODUCT_LIST_FILE_CLEAR = "clear"
 PRODUCT_LIST_FILE_RAW = "raw"
 
 # template paths of folders
-SHOPEE_CATEGORY_TREE_LIST_PATH = "./data/product_list/category/"
+PRODUCT_LIST_CATEGORY_PATH = "./data/product_list/category/"
 PRODUCT_LIST_CATEGORY_FOLDER = "./data/product_list/category"
 PRODUCT_LIST_SEARCH_FOLDER = "./data/product_list/search"
 PRODUCT_IMAGES_FOLDER = "data/product_list/category/Pet_Food_&_Supplies/Images"
