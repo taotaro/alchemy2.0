@@ -1,16 +1,15 @@
 # import modules
 import pandas as pd
-from sklearn.metrics import confusion_matrix
 import numpy as np
-from keras.callbacks import EarlyStopping
-from sklearn.model_selection import train_test_split
+import warnings
 import tensorflow as tf
 from tensorflow import keras
 from keras import layers
-from sklearn.metrics import classification_report
-import warnings
+from keras.callbacks import EarlyStopping
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import MinMaxScaler
 
+# set up warning settings
 warnings.filterwarnings("ignore")
 
 # initialize keras
@@ -58,9 +57,7 @@ def get_datasets(df, drop_col, y_col):
     return X, y
 
 
-def dnn_model(
-    nodes, reg, length, dropout, X_train, y_train, X_valid, y_valid, epochs, batch_size
-):
+def dnn_model(nodes, reg, length, dropout, X_train, y_train, X_valid, y_valid, epochs, batch_size):
     model = keras.Sequential(
         [
             layers.Dense(
@@ -129,49 +126,39 @@ def get_vectors(df, drop_cols):
     return X, y
 
 
-def get_reports(model, X_test, y_test):
-    print(metrics_classification_report(X_test, y_test, model))
-    print(metrics_confusion_matrix(X_test, y_test, model))
+def get_reports(model, X_test, y_test, csv_name):
+    classification_report=metrics_classification_report(X_test, y_test, model)
+    confusion_matrix=metrics_confusion_matrix(X_test, y_test, model)
+    name_file=csv_name+'.txt'
+    file1=open(name_file, "w")
+    file1.write(str(classification_report))
+    file1.write(str(confusion_matrix))
+    file1.close()
+    print(classification_report)
+    print(confusion_matrix)
 
 
-def split_train_test(df, df2, same_train_test=False):
-    if same_train_test:
-        df_new = split_df_equal(df, 2)
-        df_train = df_new[0]
-        df_test = df_new[1]
-    else:
-        df_train = df
-        df_test = df2
-    df = split_df_frac(df_train)
-    df_train = df[0]
-    df_valid = df[1]
+def split_train_test(df):
+    df_new=split_df_equal(df, 2)
+    df_train=df_new[0]
+    df_test=df_new[1]
+    df=split_df_frac(df_train)
+    df_train=df[0]
+    df_valid=df[1]
     return df_train, df_valid, df_test
 
 
-def run_model(df, df2, kmeans_df, kmeans_df2, cluster_cols, nodes,
-    regularizer, dropout, epochs, batch_size, same_train_test=False):
-    df = add_clusters_df(df, kmeans_df, cluster_cols)
-    df2 = add_clusters_df(df2, kmeans_df2, cluster_cols)
-    datasets = split_train_test(df, df2, same_train_test)
-    df_train, df_valid, df_test = datasets[0], datasets[1], datasets[2]
-    drop_cols = ["Sales", "Product_id"]
-    train = get_vectors(df_train, drop_cols)
-    X_train, y_train = train[0], train[1]
-    valid = get_vectors(df_train, drop_cols)
-    X_valid, y_valid = valid[0], valid[1]
-    test = get_vectors(df_test, drop_cols)
-    X_test, y_test = test[0], test[1]
-    len_train = len(X_train.columns)
-    model = dnn_model(
-        nodes,
-        regularizer,
-        len_train,
-        dropout,
-        X_train,
-        y_train,
-        X_valid,
-        y_valid,
-        epochs,
-        batch_size,
-    )
-    reports = get_reports(model, X_test, y_test)
+def run_model(df, kmeans_df, cluster_cols, csv_name, nodes=32, regularizer=0.001, dropout=0.2, epochs=1000, batch_size=30):
+    df=add_clusters_df(df, kmeans_df, cluster_cols)
+    datasets=split_train_test(df)
+    df_train, df_valid, df_test=datasets[0], datasets[1], datasets[2]
+    drop_cols=['Sales', 'Product_id']
+    train=get_vectors(df_train, drop_cols)
+    X_train, y_train=train[0], train[1]
+    valid=get_vectors(df_train, drop_cols)
+    X_valid, y_valid=valid[0], valid[1]
+    test=get_vectors(df_test, drop_cols)
+    X_test, y_test=test[0], test[1]
+    len_train=len(X_train.columns)
+    model=dnn_model(nodes, regularizer, len_train, dropout, X_train, y_train, X_valid, y_valid, 1000, 30)
+    reports=get_reports(model, X_test, y_test, csv_name)

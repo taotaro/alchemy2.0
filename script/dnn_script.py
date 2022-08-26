@@ -5,6 +5,13 @@ from ..library import dnn_lib
 
 data = pd.read_csv("Healthcare.csv")
 
+# different file for clusterings declared
+kmeans_train=pd.read_csv('clusters/kmeans_clusters.csv', index_col=0)
+agg_train=pd.read_csv('clusters/agg_clusters.csv', index_col=0)
+gaussian_train=pd.read_csv('clusters/gaussian_clusters.csv', index_col=0)
+minibatch_train=pd.read_csv('clusters/minibatch_clusters.csv', index_col=0)
+spectral_train=pd.read_csv('clusters/spectral_clusters.csv', index_col=0)
+
 kmeans_csv_name = "kmeans_healthcare_data.csv"
 clusters_csv_name = "clusters_healthcare.csv"
 

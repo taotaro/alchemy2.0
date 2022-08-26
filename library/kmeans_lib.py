@@ -1,11 +1,10 @@
 # import modules
-from sklearn.cluster import KMeans
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
 
 # set up warning settings
 warnings.filterwarnings("ignore")

@@ -1,14 +1,16 @@
+# import modules
 import pandas as pd
-from textblob import TextBlob
 import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
 import warnings
 import string
+import re
+from sklearn.feature_extraction.text import CountVectorizer
+from textblob import TextBlob
 from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
-import re
 from nltk.corpus import stopwords
 
+# set up warning settings
 stop_words = set(stopwords.words("english"))
 warnings.filterwarnings("ignore")
 
