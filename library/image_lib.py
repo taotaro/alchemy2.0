@@ -7,14 +7,12 @@ import pandas as pd
 import numpy as np
 from collections import Counter
 import traceback
-
+import YOLOv6.run_obj_detection as run_object
+from scipy.spatial import KDTree
+import webcolors
 from lib import constants
 import sys
 sys.path.insert(1, 'YOLOv6')
-import run_obj_detection as run_object
-from scipy.spatial import KDTree
-import webcolors
-
 
 
 time_str = time.strftime("%Y-%m-%d")
