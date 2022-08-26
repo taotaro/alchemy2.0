@@ -12,12 +12,12 @@ import glob
 time_str = time.strftime("%Y-%m-%d")
 logging.basicConfig(filename=f"run-{time_str}.log", level=logging.INFO, format="%(asctime)s:%(levelname)s:%(message)s")
 
-def get_product_list_max_pg(keyword):
-    '''
-    This function returns the number of pages in search
-    Parameters:
-        - keyword: desired product name
-    '''
+def get_product_list_max_pg(keyword): 
+    # '''
+    # This function returns the number of pages in search
+    # Parameters:
+    #     - keyword: desired product name
+    # '''
     response = api_product_list(keyword)
     list_page = response.json()
     num_pages = int(list_page["total_count"]) / 60
@@ -25,14 +25,14 @@ def get_product_list_max_pg(keyword):
 
 
 def get_category_list_max_pg(sub_category_id, page_type='search', scenario="PAGE_CATEGORY"):
-    '''
-    This function returns the number of pages in category
-    Parameters:
-        - page_type: type of page (search or collection, where search is for category and collection is
-                 for collections in category)
-        - scenario: type of api (collection or collection)
-        - sub_category_id: desired subcategory
-    '''
+    # '''
+    # This function returns the number of pages in category
+    # Parameters:
+    #     - page_type: type of page (search or collection, where search is for category and collection is
+    #              for collections in category)
+    #     - scenario: type of api (collection or collection)
+    #     - sub_category_id: desired subcategory
+    # '''
     response = api_category_list(sub_category_id, 0, scenario=scenario, page_type=page_type)
     cat_page = response.json()
     num_pages = int(cat_page["total_count"]) / 60
@@ -40,9 +40,9 @@ def get_category_list_max_pg(sub_category_id, page_type='search', scenario="PAGE
 
 
 def api_category_names():
-    '''
-    This function calls the shopee API to get the complete list of all category names in shopee
-    '''
+    # '''
+    # This function calls the shopee API to get the complete list of all category names
+    # '''
     url = "https://shopee.sg/api/v4/pages/get_category_tree"
     payload = {}
     headers = {
@@ -57,18 +57,17 @@ def api_category_names():
 
 
 def api_category_list(child_id, newest, limit="60", scenario="PAGE_CATEGORY", page_type='search', order="desc"):
-    '''
-    This function calls the one of the shopee API to get product list from specific category or collection
-    Parameters:
-        - page_type: type of page (search or collection, where search is for category and collection is
-                 for collections in category)
-        - scenario: type of api (collection or collection)
-        - child_id: desired subcategory id
-        - limit_items: return number of items from API, tested maximum number is 150
-        - newest: page number
-        - scenario: searching method
-    '''
-
+    # '''
+    # This function calls the one of the shopee API to get product list from specific category or collection
+    # Parameters:
+    #     - page_type: type of page (search or collection, where search is for category and collection is
+    #              for collections in category)
+    #     - scenario: type of api (collection or collection)
+    #     - child_id: desired subcategory id
+    #     - limit_items: return number of items from API, tested maximum number is 150
+    #     - newest: page number
+    #     - scenario: searching method
+    # '''
     url = f"https://shopee.sg/api/v4/search/search_items?by=relevancy&limit={limit}&match_id={child_id}&newest={newest}&order={order}&page_type={page_type}&scenario={scenario}&version=2"
     payload = {}
     headers = {
@@ -85,11 +84,11 @@ def api_category_list(child_id, newest, limit="60", scenario="PAGE_CATEGORY", pa
 
 
 def api_get_collections_id(cat_id):
-    '''
-    This function calls the one of the shopee API to get id of the all collections in category
-    Parameters:
-        -cat_id: id of category which contains desired collections
-    '''
+    # '''
+    # This function calls the one of the shopee API to get id of the all collections in category
+    # Parameters:
+    #     -cat_id: id of category which contains desired collections
+    # '''
     url = f"https://shopee.sg/api/v4/pages/get_popular_collection?catid={cat_id}"
     payload = {}
     headers = {'Cookie': 'REC_T_ID=1eebbf57-fb70-11ec-aa39-e642a9121c0f; SPC_F=d2l0o7UqUeWsiM7TOmg6XfWVrmvEOK0u; SPC_R_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_R_T_IV=TXpMYnhvb1A3TWZEN3hKSw==; SPC_SI=ggD2YgAAAAByczZQTUNkcU8WiAAAAAAAZ2VEbktOQWs=; SPC_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_T_IV=TXpMYnhvb1A3TWZEN3hKSw=='
@@ -105,17 +104,17 @@ def api_get_collections_id(cat_id):
 
 def api_product_list(keyword, limit_items="60", newest="0", order="desc", page_type="search", version="2",
                      scenario="PAGE_GLOBAL_SEARCH"):
-    '''
-    This function calls one of the shopee API to get product list from global search
-    Parameters:
-        - keyword: desired search item
-        - limit_items: return number of items from API, tested maximum number is 150
-        - newest: page number
-        - order: asc or desc
-        - page_type: type of page
-        - version: version of api, default is 2
-        - scenario: uncertain what this is
-    '''
+    # '''
+    # This function calls one of the shopee API to get product list from global search
+    # Parameters:
+    #     - keyword: desired search item
+    #     - limit_items: return number of items from API, tested maximum number is 150
+    #     - newest: page number
+    #     - order: asc or desc
+    #     - page_type: type of page
+    #     - version: version of api, default is 2
+    #     - scenario: uncertain what this is
+    # '''
 
     URL = "https://shopee.sg/api/v4/search/search_items"
 
@@ -146,11 +145,11 @@ def api_product_list(keyword, limit_items="60", newest="0", order="desc", page_t
 
 
 def get_category_names(output_file_path=constants.PRODUCT_LIST_CATEGORY_PATH):
-    '''
-    This function calls the shopee API to get category names and saves it as .csv file
-    Parameters:
-        - output_file_name: name of the output .csv file that will contain category names
-    '''
+    # '''
+    # This function calls the shopee API to get category names and saves it as .csv file
+    # Parameters:
+    #     - output_file_name: name of the output .csv file that will contain category names
+    # '''
 
     column_name = {}
     response = api_category_names()
@@ -170,10 +169,10 @@ def get_category_names(output_file_path=constants.PRODUCT_LIST_CATEGORY_PATH):
 
 def get_collection(collection_dict, category_name=constants.CATEGORY_NAME,
                             saving_name=constants.PRODUCT_LIST_FILE_TEMPLATE):
-    '''
-    This function gets all product listing from collections of category, and returns its saving paths
-    and subcategories list that have been used
-    '''
+    # '''
+    # This function gets all product listing from collections of category, and returns its saving paths
+    # and subcategories list that have been used
+    # '''
     cat_name = category_name.replace(" ", "_")
     directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{cat_name}/empty"
     path = check_directory(directory, cat_name)
@@ -228,12 +227,12 @@ def get_collection(collection_dict, category_name=constants.CATEGORY_NAME,
 
 
 def get_global_search(keyword=constants.KEYWORD, saving_name=constants.PRODUCT_LIST_FILE_TEMPLATE):
-    '''
-    This function scrapes product listing based on KEYWORD
-    Parameters:
-        - keyword: desired search term
-        - saving_name: output .csv file name for general information of product listing
-    '''
+    # '''
+    # This function scrapes product listing based on KEYWORD
+    # Parameters:
+    #     - keyword: desired search term
+    #     - saving_name: output .csv file name for general information of product listing
+    # '''
     # initialize variables
     collected_data = None
     newest = 0
@@ -284,13 +283,13 @@ def get_global_search(keyword=constants.KEYWORD, saving_name=constants.PRODUCT_L
 
 
 def check_directory(file_path, folder_name, path=constants.PRODUCT_LIST_CATEGORY_FOLDER):
-    '''
-    This function checks if provided directory exists or not, and creates that directory if it does not exist
-    Parameters:
-        - file_path: desired direcrory/file for existence check
-        - folder_name: name of the folder which is gonna be created
-        - path: path that exist and will be used to create new directory
-    '''
+    # '''
+    # This function checks if provided directory exists or not, and creates that directory if it does not exist
+    # Parameters:
+    #     - file_path: desired direcrory/file for existence check
+    #     - folder_name: name of the folder which is gonna be created
+    #     - path: path that exist and will be used to create new directory
+    # '''
     mode = 0o666
     print(file_path)
     if not os.path.isdir(file_path):
@@ -304,13 +303,13 @@ def check_directory(file_path, folder_name, path=constants.PRODUCT_LIST_CATEGORY
 
 def get_category_search(category_name=constants.CATEGORY_NAME, sub_cat_choice=5,
                         saving_name=constants.PRODUCT_LIST_FILE_TEMPLATE):
-    '''
-    This function generates a full list of products based on CATEGORY
-    Parameters:
-        - category_name: desired category name
-        - sub_cat_choice: order number of subcategory under category that will be scraped (-1 is all subcategories, order start from 0)
-        - saving_name: output .csv file name for general information
-    '''
+    # '''
+    # This function generates a full list of products based on CATEGORY
+    # Parameters:
+    #     - category_name: desired category name
+    #     - sub_cat_choice: order number of subcategory under category that will be scraped (-1 is all subcategories, order start from 0)
+    #     - saving_name: output .csv file name for general information
+    # '''
 
     collection_dict = {}
     cat_name = category_name.replace(" ", "_")
@@ -400,13 +399,13 @@ def get_category_search(category_name=constants.CATEGORY_NAME, sub_cat_choice=5,
 
 
 def download_images(path, category_or_keyword=constants.CATEGORY_NAME, start=0):
-    '''
-  This function downloads locally images from provided category/keyword search
-  Parameters:
-    - path: directory where data of each sub category is saved
-    - category_or_keyword: string that shows search method
-    - start: resuming point (image number) if code crashes
-  '''
+    # '''
+    # This function downloads locally images from provided category/keyword search
+    # Parameters:
+    #   - path: directory where data of each sub category is saved
+    #   - category_or_keyword: string that shows search method
+    #   - start: resuming point (image number) if code crashes
+    # '''
     files = glob.glob(f"{path}/2022-07-29-Pet Grooming & Hygiene-product_list.csv")
     files = [f for f in files if time_str in f]
     path += "/Images/empty"
