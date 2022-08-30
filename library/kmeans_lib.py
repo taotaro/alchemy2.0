@@ -10,6 +10,7 @@ from sklearn.cluster import KMeans
 # set up warning settings
 warnings.filterwarnings("ignore")
 
+
 def process_data(df, column):
     X = df[column]
     X.dropna(inplace=True)
@@ -111,4 +112,3 @@ def get_kmeans_clusters(k_clusters, dataset, csv_name, n_feats):
     )
     plot_words(dfs_train, n_feats)
     return kmeans_data
-

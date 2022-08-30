@@ -21,9 +21,11 @@ def has_brand_name(title, brand):
     else:
         return True
 
+
 # check if numbers are present in the title
 def has_numbers(title):
     return any(char.isdigit() for char in title)
+
 
 # remove brand name from title
 def remove_brand_name(title_data, brand_data):
@@ -35,10 +37,13 @@ def remove_brand_name(title_data, brand_data):
         title_wo_brand.append(new_title)
     return title_wo_brand
 
+
 # classifies title as neutral, positive, or negative
 def sentiment_analysis(title_data):
     data = []
-    data["sentiment_score"] = title_data.apply(lambda x: TextBlob(str(x)).sentiment.polarity)
+    data["sentiment_score"] = title_data.apply(
+        lambda x: TextBlob(str(x)).sentiment.polarity
+    )
     data["sentiment"] = np.select(
         [
             data["sentiment_score"] < 0,
@@ -49,6 +54,7 @@ def sentiment_analysis(title_data):
     )
     mood = data["sentiment"]
     return mood
+
 
 # bag of words for title and outputs top k words (value attribute)
 def bog(title_data, value):
@@ -89,7 +95,16 @@ def balance_df(df_title):
 
 
 # compile all lists into a dataframe
-def make_df(product_id, brand_in_title, mood, number_in_title, bog, mall_label_in_title, sales, title_len):
+def make_df(
+    product_id,
+    brand_in_title,
+    mood,
+    number_in_title,
+    bog,
+    mall_label_in_title,
+    sales,
+    title_len,
+):
     df = pd.DataFrame(
         {
             "Product_id": product_id,
@@ -101,7 +116,9 @@ def make_df(product_id, brand_in_title, mood, number_in_title, bog, mall_label_i
         }
     )
 
-    df_title = pd.concat([df.reset_index(drop=True), bog.reset_index(drop=True)], axis=1)
+    df_title = pd.concat(
+        [df.reset_index(drop=True), bog.reset_index(drop=True)], axis=1
+    )
     df_title.insert(len(df_title.columns), "Sales", sales)
     df_title = balance_df(df_title)
 
@@ -109,8 +126,17 @@ def make_df(product_id, brand_in_title, mood, number_in_title, bog, mall_label_i
 
 
 # make a df with the title included
-def df_with_title(product_id, brand_in_title, mood, number_in_title, bog, 
-                  mall_label_in_title, sales, title_len, title_data):
+def df_with_title(
+    product_id,
+    brand_in_title,
+    mood,
+    number_in_title,
+    bog,
+    mall_label_in_title,
+    sales,
+    title_len,
+    title_data,
+):
     # initialize
     title_list = []
     for i in title_data:
@@ -172,8 +198,10 @@ def classify_sales(sales_data):
 
 
 # main function
-def title_analysis(title_data, brand_data, label_data, id_data, sales_data, title_include=False):
-  # initialize
+def title_analysis(
+    title_data, brand_data, label_data, id_data, sales_data, title_include=False
+):
+    # initialize
     is_brand_in_title = []
     mood_list = []
     number_in_title = []
@@ -189,7 +217,9 @@ def title_analysis(title_data, brand_data, label_data, id_data, sales_data, titl
     for i in range(len(title_data)):
         item_id_list.append(id_data[i])
 
-        words = sum([i.strip(string.punctuation).isalpha() for i in title_data[i].split()])
+        words = sum(
+            [i.strip(string.punctuation).isalpha() for i in title_data[i].split()]
+        )
 
         title_len_list.append(str(words))
 
@@ -255,10 +285,14 @@ def df_to_csv(data, csv_name, title_include=False, only_title=False):
     if only_title:
         title_list = preprocess_title(title_data, brand_data)
         sales_list = classify_sales(sales_data)
-        df = pd.DataFrame({"Title": title_list, "Product_id": id_data, "Sales": sales_list})
+        df = pd.DataFrame(
+            {"Title": title_list, "Product_id": id_data, "Sales": sales_list}
+        )
         df = balance_df(df)
     else:
-        df = title_analysis(title_data, brand_data, label_data, id_data, sales_data, title_include)
+        df = title_analysis(
+            title_data, brand_data, label_data, id_data, sales_data, title_include
+        )
 
     # create csv file from dataframe
     df.to_csv("results/" + csv_name)

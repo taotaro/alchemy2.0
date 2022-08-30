@@ -1,8 +1,10 @@
 # template inputs
 KEYWORD = "Pet supplements"
-CATEGORY_NAME = 'Pet Food & Supplies'
+CATEGORY_NAME = "Pet Food & Supplies"
 MODE_OF_SEARCH = 2  # 1:Using Global Search; 2: Using Category Search
-PRODUCT_PAGE_SCRAPE_MODE = 0  # 0:Script will not scrap product page; 1:Script will scrap product page
+PRODUCT_PAGE_SCRAPE_MODE = (
+    0  # 0:Script will not scrap product page; 1:Script will scrap product page
+)
 
 # template file names
 PRODUCT_COMMENT_LIST_FILE = "comment"

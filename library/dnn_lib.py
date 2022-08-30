@@ -57,7 +57,9 @@ def get_datasets(df, drop_col, y_col):
     return X, y
 
 
-def dnn_model(nodes, reg, length, dropout, X_train, y_train, X_valid, y_valid, epochs, batch_size):
+def dnn_model(
+    nodes, reg, length, dropout, X_train, y_train, X_valid, y_valid, epochs, batch_size
+):
     model = keras.Sequential(
         [
             layers.Dense(
@@ -127,9 +129,9 @@ def get_vectors(df, drop_cols):
 
 
 def get_reports(model, X_test, y_test, csv_name):
-    classification_report=metrics_classification_report(X_test, y_test, model)
-    confusion_matrix=metrics_confusion_matrix(X_test, y_test, model)
-    file1=open(csv_name, "w")
+    classification_report = metrics_classification_report(X_test, y_test, model)
+    confusion_matrix = metrics_confusion_matrix(X_test, y_test, model)
+    file1 = open(csv_name, "w")
     file1.write(str(classification_report))
     file1.write(str(confusion_matrix))
     file1.close()
@@ -138,26 +140,47 @@ def get_reports(model, X_test, y_test, csv_name):
 
 
 def split_train_test(df):
-    df_new=split_df_equal(df, 2)
-    df_train=df_new[0]
-    df_test=df_new[1]
-    df=split_df_frac(df_train)
-    df_train=df[0]
-    df_valid=df[1]
+    df_new = split_df_equal(df, 2)
+    df_train = df_new[0]
+    df_test = df_new[1]
+    df = split_df_frac(df_train)
+    df_train = df[0]
+    df_valid = df[1]
     return df_train, df_valid, df_test
 
 
-def run_model(df, kmeans_df, cluster_cols, csv_name, nodes=32, regularizer=0.001, dropout=0.2, epochs=1000, batch_size=30):
-    df=add_clusters_df(df, kmeans_df, cluster_cols)
-    datasets=split_train_test(df)
-    df_train, df_valid, df_test=datasets[0], datasets[1], datasets[2]
-    drop_cols=['Sales', 'Product_id']
-    train=get_vectors(df_train, drop_cols)
-    X_train, y_train=train[0], train[1]
-    valid=get_vectors(df_train, drop_cols)
-    X_valid, y_valid=valid[0], valid[1]
-    test=get_vectors(df_test, drop_cols)
-    X_test, y_test=test[0], test[1]
-    len_train=len(X_train.columns)
-    model=dnn_model(nodes, regularizer, len_train, dropout, X_train, y_train, X_valid, y_valid, 1000, 30)
-    reports=get_reports(model, X_test, y_test, csv_name)
+def run_model(
+    df,
+    kmeans_df,
+    cluster_cols,
+    csv_name,
+    nodes=32,
+    regularizer=0.001,
+    dropout=0.2,
+    epochs=1000,
+    batch_size=30,
+):
+    df = add_clusters_df(df, kmeans_df, cluster_cols)
+    datasets = split_train_test(df)
+    df_train, df_valid, df_test = datasets[0], datasets[1], datasets[2]
+    drop_cols = ["Sales", "Product_id"]
+    train = get_vectors(df_train, drop_cols)
+    X_train, y_train = train[0], train[1]
+    valid = get_vectors(df_train, drop_cols)
+    X_valid, y_valid = valid[0], valid[1]
+    test = get_vectors(df_test, drop_cols)
+    X_test, y_test = test[0], test[1]
+    len_train = len(X_train.columns)
+    model = dnn_model(
+        nodes,
+        regularizer,
+        len_train,
+        dropout,
+        X_train,
+        y_train,
+        X_valid,
+        y_valid,
+        1000,
+        30,
+    )
+    reports = get_reports(model, X_test, y_test, csv_name)

@@ -12,13 +12,14 @@ from scipy.spatial import KDTree
 import webcolors
 from lib import constants
 import sys
-sys.path.insert(1, 'YOLOv6')
+
+sys.path.insert(1, "YOLOv6")
 
 
 time_str = time.strftime("%Y-%m-%d")
 
 
-class ProcessImageData():
+class ProcessImageData:
     def __init__(self, imageLoc):
         try:
             self.img = cv2.imread(imageLoc, 1)
@@ -56,24 +57,24 @@ class ProcessImageData():
         colors_list = []
         for rgb, value in self.number_counter:
             color_name = self.convert_rgb_to_names(rgb)
-            colors_list.append([color_name, value, ((float(value) / self.total_pixels) * 100)])
+            colors_list.append(
+                [color_name, value, ((float(value) / self.total_pixels) * 100)]
+            )
         return colors_list
 
     def twenty_most_common(self):
         self.count()
         self.number_counter = Counter(self.manual_count).most_common(20)
 
-
     def detect(self):
         self.twenty_most_common()
-        self.percentage_of_first = (float(self.number_counter[0][1]) / self.total_pixels)
+        self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
         res = self.average_colour()
         if self.percentage_of_first > 0.5:
             res = self.number_counter[0][0]
         else:
             self.average_colour()
         return res
-
 
     def blur_check(self, image_path):
         i = image_path
@@ -88,12 +89,11 @@ class ProcessImageData():
         focus_measure = cv2.Laplacian(gray, cv2.CV_64F).var()
         return focus_measure
 
-
     def brightness_check(self, image_path):
         brightness_results = []
         input_image = Image.open(image_path)
         # 1st approach
-        image = input_image.convert('L')
+        image = input_image.convert("L")
         stat = ImageStat.Stat(image)
         brightness_results.append(stat.mean[0])
 
@@ -127,7 +127,6 @@ class ProcessImageData():
                     break
         return is_border
 
-
     def pixel_difference_height(self, image, start_pixel, end_pixel, width, step=1):
         is_border = False
         for pixel in range(start_pixel, end_pixel, step):
@@ -154,21 +153,24 @@ class ProcessImageData():
     def border_check(self, image_path):
         image = cv2.imread(image_path)
         width, height = image.shape[:2]
-        left_side = self.pixel_difference_width(image, 1, int(width/4), height)
+        left_side = self.pixel_difference_width(image, 1, int(width / 4), height)
         if not left_side:
             return 0
-        right_side = self.pixel_difference_width(image, width-1, int(width*0.75), height, step=-1)
+        right_side = self.pixel_difference_width(
+            image, width - 1, int(width * 0.75), height, step=-1
+        )
         if not right_side:
             return 0
-        upper_side = self.pixel_difference_height(image, 1, int(height/4), width)
+        upper_side = self.pixel_difference_height(image, 1, int(height / 4), width)
         if not upper_side:
             return 0
-        down_side = self.pixel_difference_height(image, height-1, int(width*0.75), width, step=-1)
+        down_side = self.pixel_difference_height(
+            image, height - 1, int(width * 0.75), width, step=-1
+        )
         if (int(left_side) + int(right_side) + int(upper_side) + int(down_side)) >= 4:
             return 1
         else:
             return 0
-
 
     def check_contrast(self, image_path):
         i = image_path
@@ -197,7 +199,6 @@ class ProcessImageData():
         average_contrast = 100 * np.mean(contrast)
         return average_contrast
 
-
     def contrast_calc(self, image_path):
         img = cv2.imread(image_path)
         img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -223,9 +224,11 @@ class ProcessImageData():
         img = image_path
         img_1 = cv2.imread(image_path)
 
-        reader = easyocr.Reader(['en'])
-        output = reader.readtext(img, min_size=100, rotation_info=[90, 180,270], width_ths=5)
-        
+        reader = easyocr.Reader(["en"])
+        output = reader.readtext(
+            img, min_size=100, rotation_info=[90, 180, 270], width_ths=5
+        )
+
         text_pixels = 0
         text_color = []
         print(f"TOTAL PIXELS {total_num_pixels}")
@@ -236,11 +239,13 @@ class ProcessImageData():
             bottom_right = (int(bottom_right[0]), int(bottom_right[1]))
             bottom_left = (int(bottom_left[0]), int(bottom_left[1]))
 
-            cropped_image = img_1[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+            cropped_image = img_1[
+                top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]
+            ]
             cv2.imshow("crop", cropped_image)
             w, h = cropped_image.shape[:2]
             print(f"text_pixels={text_pixels}, h= {h}, w={w}")
-            text_pixels = text_pixels + (w*h)
+            text_pixels = text_pixels + (w * h)
             text_image = ProcessImageData(cropped_image)
             bg_color_of_text = text_image.detect()
             print(bg_color_of_text)
@@ -253,7 +258,7 @@ class ProcessImageData():
         if text_pixels == 0:
             text_percentage_of_image = 0
         else:
-            text_percentage_of_image = (text_pixels/total_num_pixels)*100
+            text_percentage_of_image = (text_pixels / total_num_pixels) * 100
         return output, text_percentage_of_image, text_color
 
     def slope(self, x1, y1, x2, y2):
@@ -283,8 +288,9 @@ class ProcessImageData():
 
         # using RETR_EXTERNAL instead of RETR_CCOMP
         # _ , contours, hierarchy = cv2.findContours(connected.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        contours, hierarchy = cv2.findContours(connected.copy(), cv2.RETR_EXTERNAL,
-                                               cv2.CHAIN_APPROX_NONE)  # opencv >= 4.0
+        contours, hierarchy = cv2.findContours(
+            connected.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+        )  # opencv >= 4.0
 
         mask = np.zeros(bw.shape, dtype=np.uint8)
         # cumulative theta value
@@ -293,11 +299,11 @@ class ProcessImageData():
         ct = 0
         for idx in range(len(contours)):
             x, y, w, h = cv2.boundingRect(contours[idx])
-            mask[y:y + h, x:x + w] = 0
+            mask[y : y + h, x : x + w] = 0
             # fill the contour
             cv2.drawContours(mask, contours, idx, (255, 255, 255), -1)
             # ratio of non-zero pixels in the filled region
-            r = float(cv2.countNonZero(mask[y:y + h, x:x + w])) / (w * h)
+            r = float(cv2.countNonZero(mask[y : y + h, x : x + w])) / (w * h)
 
             # assume at least 45% of the area is filled if it contains text
             if r > 0.45 and w > 8 and h > 8:
@@ -315,7 +321,7 @@ class ProcessImageData():
                 ct += 1
 
         # find the average of all cumulative theta value
-        if  ct == 0:
+        if ct == 0:
             orientation = 0
         else:
             orientation = cummTheta / ct
@@ -338,7 +344,7 @@ def get_images_data(path):
         "Text colors": [],
         "Angle": [],
         "Pixels (Height, Width)": [],
-        "Borders exist": []
+        "Borders exist": [],
     }
 
     images = glob.glob(f"{path}/*.jpg")
@@ -361,7 +367,9 @@ def get_images_data(path):
 
         images_data["Closest Color Name"].append(closest_name)
         images_data["20 common colors"].append(colors)
-        images_data["ID_and_Image_Number"].append(name.split("/")[-1] + name.split("-number")[1])
+        images_data["ID_and_Image_Number"].append(
+            name.split("/")[-1] + name.split("-number")[1]
+        )
         images_data["Brightness"].append(brightness_result)
         images_data["Background_Color"].append(bg_color)
         images_data["Blurriness"].append(blur_res)
@@ -386,10 +394,10 @@ def run_image_processing():
     images_data_file = get_images_data(image_path)
 
     for image in images:
-        run_object.args['weights'] = "YOLOv6/weights/yolov6n.pt"
-        run_object.args['yaml'] = "YOLOv6/data/coco.yaml"
-        run_object.args['font'] = "YOLOv6/yolov6/utils/Arial.ttf"
-        run_object.args['source'] = image
+        run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
+        run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
+        run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
+        run_object.args["source"] = image
         dict_image_content = run_object.run_object_detection()
 
     image_contents = pd.DataFrame(dict_image_content)
@@ -398,6 +406,7 @@ def run_image_processing():
 
     result = pd.concat([images_data_file, image_contents], axis=1)
     result.to_csv(f"{image_path}/image_result_data.csv")
+
 
 if __name__ == "__main__":
     run_image_processing()
