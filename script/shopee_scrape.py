@@ -17,12 +17,12 @@ if __name__ == "__main__":
     result = []
     search_mode = constants.MODE_OF_SEARCH
 
-    if search_mode == 1:  # 1 is scrapping using keyword search
+    if search_mode == 1:  # 1 is scrapping using keyword global search
         keyword = "pet products"
         limit_items = "60"
         logging.info("Getting general information: Start...")
         start_time_general = time.time()
-        saving_path = shopee.global_search(keyword)
+        saving_path = shopee.get_global_search(keyword)
         logging.info("Getting general information: done!")
         if constants.PRODUCT_PAGE_SCRAPE_MODE == 1:
             shopee.download_images(saving_path, category_or_keyword=constants.KEYWORD)
@@ -30,7 +30,7 @@ if __name__ == "__main__":
             image.run_image_processing()
         logging.info("--- %s seconds for general information ---" % (time.time() - start_time_general))
 
-    elif search_mode == 2: # 2 is scrapping using categories
+    elif search_mode == 2: # 2 is scrapping using categories search
         logging.info("Getting general information: Start...")
         start_time_general = time.time()
         saving_path, saved_sub_category_names = shopee.get_category_search(constants.CATEGORY_NAME, sub_cat_choice=-3)

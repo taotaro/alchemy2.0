@@ -211,7 +211,7 @@ def get_collection(
     saved_sub_categories = []
     for key, value in collection_dict.items():
         newest = 0  # newest is starting product to scrape
-        shoppe_data_frame_cat = pd.DataFrame()
+        shopee_data_frame_cat = pd.DataFrame()
         json_general_raw = {}
         child_id = int(value)
 
@@ -252,11 +252,11 @@ def get_collection(
         temp_df = pd.json_normalize(result_tmp)
 
         # updating dataframe to save all data/ append new 60 products to dataframe each time
-        if shoppe_data_frame_cat.empty:
-            shoppe_data_frame_cat = temp_df
+        if shopee_data_frame_cat.empty:
+            shopee_data_frame_cat = temp_df
         else:
-            previous = shoppe_data_frame_cat
-            shoppe_data_frame_cat = pd.concat([previous, temp_df])
+            previous = shopee_data_frame_cat
+            shopee_data_frame_cat = pd.concat([previous, temp_df])
 
         saved_sub_categories.append(key)
 
@@ -265,7 +265,7 @@ def get_collection(
             f"{path}/{time_str}-{key}-{constants.PRODUCT_LIST_FILE_RAW}.json", "w"
         ) as raw:
             json.dump(json_general_raw, raw)
-        shoppe_data_frame_cat.to_csv(f"{path}/{time_str}-{key}-{saving_name}.csv")
+        shopee_data_frame_cat.to_csv(f"{path}/{time_str}-{key}-{saving_name}.csv")
     return path, saved_sub_categories
 
 
@@ -293,8 +293,8 @@ def get_global_search(
         directory, keyword, path=constants.PRODUCT_LIST_SEARCH_FOLDER
     )
 
+    # check if there are pages found for the keyword
     if num_pages != 0:
-
         for page in range(num_pages):
             time.sleep(random.uniform(0.0, 3.0))
 
@@ -315,13 +315,13 @@ def get_global_search(
                 result.append(product)
 
         # saving all data into .csv and .json
-        shoppe_data_frame = pd.json_normalize(result)
-        shoppe_data_frame["Combined"] = result
+        shopee_data_frame = pd.json_normalize(result)
+        shopee_data_frame["Combined"] = result
         with open(
             f"{path}/{time_str}-{constants.PRODUCT_LIST_FILE_RAW}.json", "w"
         ) as raw:
             json.dump(json_general_raw, raw)
-        shoppe_data_frame.to_csv(f"{path}/{time_str}-{saving_name}.csv")
+        shopee_data_frame.to_csv(f"{path}/{time_str}-{saving_name}.csv")
 
         # deleting folder called "empty"
         os.rmdir(directory)
@@ -337,7 +337,7 @@ def check_directory(
     # '''
     # This function checks if provided directory exists or not, and creates that directory if it does not exist
     # Parameters:
-    #     - file_path: desired direcrory/file for existence check
+    #     - file_path: desired directory/file for existence check
     #     - folder_name: name of the folder which is gonna be created
     #     - path: path that exist and will be used to create new directory
     # '''
@@ -345,9 +345,7 @@ def check_directory(
     print(file_path)
     if not os.path.isdir(file_path):
         os.makedirs(file_path, mode)
-        path_to_create = path + f"/{folder_name}"
-    else:
-        path_to_create = path + f"/{folder_name}"
+    path_to_create = path + f"/{folder_name}"
     path_to_create.replace(" ", "_")
     return path_to_create
 
@@ -387,7 +385,7 @@ def get_category_search(
     # iterate through each subcategory
     for sub_cat in category_list[1]:
         newest = 0
-        shoppe_data_frame_cat = pd.DataFrame()
+        shopee_data_frame_cat = pd.DataFrame()
         json_general_raw = {}
 
         # -1: for scrapping all subcategories; -2:for scrapping main page of category; -3: for scrapping collections
@@ -443,11 +441,11 @@ def get_category_search(
         temp_df = pd.json_normalize(result_tmp)
 
         # update dataframe to store all product
-        if shoppe_data_frame_cat.empty:
-            shoppe_data_frame_cat = temp_df
+        if shopee_data_frame_cat.empty:
+            shopee_data_frame_cat = temp_df
         else:
-            previous = shoppe_data_frame_cat
-            shoppe_data_frame_cat = pd.concat([previous, temp_df])
+            previous = shopee_data_frame_cat
+            shopee_data_frame_cat = pd.concat([previous, temp_df])
 
         # saving data
         saved_sub_categories.append(sub_cat[0])
@@ -456,7 +454,7 @@ def get_category_search(
             "w",
         ) as raw:
             json.dump(json_general_raw, raw)
-        shoppe_data_frame_cat.to_csv(
+        shopee_data_frame_cat.to_csv(
             f"{path}/{time_str}-{sub_cat[0]}-{saving_name}.csv"
         )
 
