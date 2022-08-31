@@ -55,9 +55,7 @@ def api_category_names():
     # '''
     url = "https://shopee.sg/api/v4/pages/get_category_tree"
     payload = {}
-    headers = {
-        "Cookie": "REC_T_ID=1eebbf57-fb70-11ec-aa39-e642a9121c0f; SPC_F=d2l0o7UqUeWsiM7TOmg6XfWVrmvEOK0u; SPC_R_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_R_T_IV=TXpMYnhvb1A3TWZEN3hKSw==; SPC_SI=agC8YgAAAAB4UzJPU2VxZvtu8gAAAAAAd1JNM0xmUkY=; SPC_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_T_IV=TXpMYnhvb1A3TWZEN3hKSw=="
-    }
+    headers = {"Cookie": constants.COOKIE}
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
         return response
@@ -87,9 +85,7 @@ def api_category_list(
     # '''
     url = f"https://shopee.sg/api/v4/search/search_items?by=relevancy&limit={limit}&match_id={child_id}&newest={newest}&order={order}&page_type={page_type}&scenario={scenario}&version=2"
     payload = {}
-    headers = {
-        "Cookie": "REC_T_ID=1eebbf57-fb70-11ec-aa39-e642a9121c0f; SPC_F=d2l0o7UqUeWsiM7TOmg6XfWVrmvEOK0u; SPC_R_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_R_T_IV=TXpMYnhvb1A3TWZEN3hKSw==; SPC_SI=agC8YgAAAAB4UzJPU2VxZvtu8gAAAAAAd1JNM0xmUkY=; SPC_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_T_IV=TXpMYnhvb1A3TWZEN3hKSw=="
-    }
+    headers = {"Cookie": constants.COOKIE}
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
     except Exception as e:
@@ -108,9 +104,7 @@ def api_get_collections_id(cat_id):
     # '''
     url = f"https://shopee.sg/api/v4/pages/get_popular_collection?catid={cat_id}"
     payload = {}
-    headers = {
-        "Cookie": "REC_T_ID=1eebbf57-fb70-11ec-aa39-e642a9121c0f; SPC_F=d2l0o7UqUeWsiM7TOmg6XfWVrmvEOK0u; SPC_R_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_R_T_IV=TXpMYnhvb1A3TWZEN3hKSw==; SPC_SI=ggD2YgAAAAByczZQTUNkcU8WiAAAAAAAZ2VEbktOQWs=; SPC_T_ID=BOoN7lckySNuyWvnjuWgVxB24aHhrbECNT3qHWQ9zMsVGC706kY2zSUgjGj93XjBZcsT2x+gJ2A+gHLRRhLBqJeyicAaRA2JEudV2FNTj1Dbwr/xRpg9wkBPnT7C85sHC6Lz7UZhoPtNu01ZNkYs3YbGD3UpsDGeIOY+A9gL52U=; SPC_T_IV=TXpMYnhvb1A3TWZEN3hKSw=="
-    }
+    headers = {"Cookie": constants.COOKIE}
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
         return response
@@ -141,7 +135,7 @@ def api_product_list(
     #     - scenario: uncertain what this is
     # '''
 
-    URL = "https://shopee.sg/api/v4/search/search_items"
+    url = "https://shopee.sg/api/v4/search/search_items"
 
     querystring = {
         "by": "relevancy",
@@ -154,21 +148,17 @@ def api_product_list(
         "version": version,
     }
 
-    payload = ""
+    payload = {}
     headers = {
-        "cookie": "SPC_F=vC3PSL4kgYTVJBlxCaouUO97FGtq5DnT; REC_T_ID=24edd776-fb71-11ec-a126-b47af14a2e80; "
-        "SPC_R_T_ID=KM2EWNMiOfEZ7WPjqWR0BFO8w8nBqMhvhbFAfODballvF%2BMUCNVI0JPbw04EZqgNfoWqjbUPSFk5C"
-        "%2BleV9HteBl3fcCQDXP1suSNebes0A7nmte5cln2gBPOiaAGPUBMpFm5vrCtXMzt1cZEahjoTxanNhOLfP04v3fTgirEZqI%3D; SPC_R_T_IV=NFg0T0pTQlBoYVB0QjJNbg%3D%3D; SPC_T_ID=KM2EWNMiOfEZ7WPjqWR0BFO8w8nBqMhvhbFAfODballvF%2BMUCNVI0JPbw04EZqgNfoWqjbUPSFk5C%2BleV9HteBl3fcCQDXP1suSNebes0A7nmte5cln2gBPOiaAGPUBMpFm5vrCtXMzt1cZEahjoTxanNhOLfP04v3fTgirEZqI%3D; SPC_T_IV=NFg0T0pTQlBoYVB0QjJNbg%3D%3D; SPC_SI=agC8YgAAAABKVEN5RTVzTFoR8wAAAAAAWEZDTVFVYXo%3D"
+        "Cookie": constants.COOKIE_1
     }
 
     try:
-        response = requests.request(
-            "GET", URL, data=payload, headers=headers, params=querystring
-        )
+        response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
         return response
     except:
         # Return something
-        logging.info("API doesn't work")
+        logging.info("Search Items API doesn't work")
         logging.error(traceback.format_exc())
         return
 
@@ -199,15 +189,15 @@ def get_category_names(output_file_path=constants.PRODUCT_LIST_CATEGORY_PATH):
 def get_collection(
     collection_dict,
     category_name=constants.CATEGORY_NAME,
-    saving_name=constants.PRODUCT_LIST_FILE_TEMPLATE,
+    filename=constants.PRODUCT_LIST_FILE_TEMPLATE,
 ):
     # '''
     # This function gets all product listing from collections of category, and returns its saving paths
     # and subcategories list that have been used
     # '''
-    cat_name = category_name.replace(" ", "_")
-    directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{cat_name}/empty"
-    path = check_directory(directory, cat_name)
+    snake_category_name = category_name.replace(" ", "_")
+    directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{snake_category_name}/empty"
+    path = check_directory(directory, snake_category_name)
     saved_sub_categories = []
     for key, value in collection_dict.items():
         newest = 0  # newest is starting product to scrape
@@ -216,12 +206,7 @@ def get_collection(
         child_id = int(value)
 
         # getting number of pages
-        num_pages = (
-            get_category_list_max_pg(
-                child_id, scenario="PAGE_COLLECTION", page_type="collection"
-            )
-            + 1
-        )
+        num_pages = get_category_list_max_pg(child_id, scenario="PAGE_COLLECTION", page_type="collection") + 1
         result_tmp = []
         logging.info(num_pages)
 
@@ -265,19 +250,18 @@ def get_collection(
             f"{path}/{time_str}-{key}-{constants.PRODUCT_LIST_FILE_RAW}.json", "w"
         ) as raw:
             json.dump(json_general_raw, raw)
-        shopee_data_frame_cat.to_csv(f"{path}/{time_str}-{key}-{saving_name}.csv")
+        shopee_data_frame_cat.to_csv(f"{path}/{time_str}-{key}-{filename}.csv")
     return path, saved_sub_categories
 
 
-def get_global_search(
-    keyword=constants.KEYWORD, saving_name=constants.PRODUCT_LIST_FILE_TEMPLATE
-):
+def get_global_search(keyword=constants.KEYWORD, filename=constants.PRODUCT_LIST_FILE_TEMPLATE):
     # '''
     # This function scrapes product listing based on KEYWORD
     # Parameters:
     #     - keyword: desired search term
-    #     - saving_name: output .csv file name for general information of product listing
+    #     - filename: output .csv file name for general information of product listing
     # '''
+
     # initialize variables
     collected_data = None
     newest = 0
@@ -289,11 +273,9 @@ def get_global_search(
 
     # checking directory for saving data
     directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{k.replace(' ', '_')}/empty"
-    path = check_directory(
-        directory, keyword, path=constants.PRODUCT_LIST_SEARCH_FOLDER
-    )
+    path = check_directory(directory, keyword, path=constants.PRODUCT_LIST_SEARCH_FOLDER)
 
-    # check if there are pages found for the keyword
+    # check if there are pages found for the keyword. if not, quit.
     if num_pages != 0:
         for page in range(num_pages):
             time.sleep(random.uniform(0.0, 3.0))
@@ -321,7 +303,7 @@ def get_global_search(
             f"{path}/{time_str}-{constants.PRODUCT_LIST_FILE_RAW}.json", "w"
         ) as raw:
             json.dump(json_general_raw, raw)
-        shopee_data_frame.to_csv(f"{path}/{time_str}-{saving_name}.csv")
+        shopee_data_frame.to_csv(f"{path}/{time_str}-{filename}.csv")
 
         # deleting folder called "empty"
         os.rmdir(directory)
@@ -353,21 +335,21 @@ def check_directory(
 def get_category_search(
     category_name=constants.CATEGORY_NAME,
     sub_cat_choice=5,
-    saving_name=constants.PRODUCT_LIST_FILE_TEMPLATE,
+    filename=constants.PRODUCT_LIST_FILE_TEMPLATE,
 ):
     # '''
     # This function generates a full list of products based on CATEGORY
     # Parameters:
     #     - category_name: desired category name
     #     - sub_cat_choice: order number of subcategory under category that will be scraped (-1 is all subcategories, order start from 0)
-    #     - saving_name: output .csv file name for general information
+    #     - filename: output .csv file name for general information
     # '''
 
     collection_dict = {}
-    cat_name = category_name.replace(" ", "_")
+    snake_category_name = category_name.replace(" ", "_")
     category_name = category_name.replace("_", " ")
-    directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{cat_name}/empty"
-    path = check_directory(directory, cat_name)
+    directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{snake_category_name}/empty"
+    path = check_directory(directory, snake_category_name)
     saved_sub_categories = []
 
     # check if categories.csv file exist
@@ -455,7 +437,7 @@ def get_category_search(
         ) as raw:
             json.dump(json_general_raw, raw)
         shopee_data_frame_cat.to_csv(
-            f"{path}/{time_str}-{sub_cat[0]}-{saving_name}.csv"
+            f"{path}/{time_str}-{sub_cat[0]}-{filename}.csv"
         )
 
     # deleting folder called "empty"

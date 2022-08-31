@@ -38,7 +38,7 @@ ninja==1.10.2.3
 nltk==3.7
 numpy==1.23.2
 oauthlib==3.2.0
-opencv-python-headless==4.5.4.60
+opencv-python==4.5.5.64
 opt-einsum==3.3.0
 outcome==1.2.0
 packaging==21.3
@@ -93,4 +93,5 @@ webcolors==1.12
 Werkzeug==2.2.2
 wrapt==1.14.1
 wsproto==1.2.0
+yolov6==0.0.1
 zipp==3.8.1
