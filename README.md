@@ -12,6 +12,10 @@ Stable version of alchemy. Libraries are implemented. No Jupyter notebooks are a
       ```
       git pull --rebase origin main
       ```
+    - Then push the changes to origin to keep the history of your branch intact:
+      ```
+      git push --force
+      ```
 3. When all code changes have been finished in your feature branch, create a Pull Request and your peers review it before merging.
 4. Update the ```requirements.txt``` if there are any new modules you installed. How to update: 
     ```
