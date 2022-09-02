@@ -1,7 +1,7 @@
 import logging
 import time
 from library import constants
-from library import image_lib as image
+# from library import image_lib as image
 from library import shopee_lib as shopee
 from library.product_class import Product
 
@@ -24,7 +24,7 @@ def main():
         if constants.PRODUCT_PAGE_SCRAPE_MODE:
             shopee.download_images(saved_path, category_or_keyword=constants.KEYWORD)
             Product(saved_path, keyword)
-            image.run_image_processing()
+            # image.run_image_processing()
 
     # 2 is scrapping using categories search
     elif search_mode == 2: 
@@ -34,7 +34,7 @@ def main():
             for sub_cat in saved_sub_category_names:
                 Product(saved_path, sub_cat)
             shopee.download_images(saved_path, start=0) # start is resume point, to restart in case of crush/block
-            image.run_image_processing()
+            # image.run_image_processing()
 
     # logs to mark ending time
     logging.info("Getting general information: done!")

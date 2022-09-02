@@ -133,3 +133,13 @@ bin/
 pyvenv.cfg
 .DS_Store
 share/
+
+# jupyter notebooks
+*.ipynb
+
+# test results
+*.csv
+*.json
+data/
+logs/
+include/

@@ -6,7 +6,7 @@ import json
 from ast import literal_eval
 import traceback
 import random
-import constants
+from . import constants
 import os
 import glob
 
@@ -269,11 +269,10 @@ def get_global_search(keyword=constants.KEYWORD, filename=constants.PRODUCT_LIST
     json_general_raw = {}
     json_list = []
     result = []
-    k = keyword
 
     # checking directory for saving data
-    directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{k.replace(' ', '_')}/empty"
-    path = check_directory(directory, keyword, path=constants.PRODUCT_LIST_SEARCH_FOLDER)
+    directory = constants.PRODUCT_LIST_CATEGORY_FOLDER + f"/{keyword.replace(' ', '_')}/empty"
+    path = check_directory(directory, keyword, path=constants.PRODUCT_LIST_CATEGORY_FOLDER)
 
     # check if there are pages found for the keyword. if not, quit.
     if num_pages != 0:
@@ -299,9 +298,7 @@ def get_global_search(keyword=constants.KEYWORD, filename=constants.PRODUCT_LIST
         # saving all data into .csv and .json
         shopee_data_frame = pd.json_normalize(result)
         shopee_data_frame["Combined"] = result
-        with open(
-            f"{path}/{time_str}-{constants.PRODUCT_LIST_FILE_RAW}.json", "w"
-        ) as raw:
+        with open(f"{path}/{time_str}-{constants.PRODUCT_LIST_FILE_RAW}.json", "w") as raw:
             json.dump(json_general_raw, raw)
         shopee_data_frame.to_csv(f"{path}/{time_str}-{filename}.csv")
 
@@ -324,12 +321,10 @@ def check_directory(
     #     - path: path that exist and will be used to create new directory
     # '''
     mode = 0o666
-    print(file_path)
+    print("path", file_path)
     if not os.path.isdir(file_path):
         os.makedirs(file_path, mode)
-    path_to_create = path + f"/{folder_name}"
-    path_to_create.replace(" ", "_")
-    return path_to_create
+    return file_path
 
 
 def get_category_search(
