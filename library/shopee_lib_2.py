@@ -250,19 +250,21 @@ def category_tree_search():
 
 def download_images(csv_path, path):
     file = pd.read_csv(csv_path)
+
+    try:
+        os.makedirs(f"{path}/images/")
+    except Exception as e:
+        print(f"Directory existed: {path}/images/")
     base_url = "https://cf.shopee.sg/file"
+
     for image_list in file['product.images']:
-        product_id = file['product.itemid']
         images = literal_eval(image_list)
+
         for image in images:
             image_url = f"{base_url}/{image}"
             response = requests.get(image_url, timeout = 100).content
 
-            try:
-                os.makedirs(f"{path}/images/")
-            except IsADirectoryError:
-                print(f"Directory existed: {path}/images/")
-
-            with open(f"{path}/images/{product_id}.jpg", "wb") as handler:
+            with open(f"{path}/images/{image}.jpg", "wb") as handler:
                 handler.write(response)
+                print(f"Image downloaded - {image}")
     return
