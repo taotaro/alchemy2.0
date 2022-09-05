@@ -28,7 +28,7 @@ def main():
     # shopee.to_json(json_path, json_result)
 
     category_list, subcategory_list = shopee.category_tree_search()
-    for category in subcategory_list:
+    for category in category_list:
         keyword = category['name']
         print(f"Searching {keyword}")
         df_result, json_result = shopee.global_search(keyword)
