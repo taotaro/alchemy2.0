@@ -261,12 +261,12 @@ def download_images(csv_path, path):
         images = literal_eval(image_list)
 
         for image in images:
-		if os.path.exists(f"{path}/images/{image}.jpg"):
-			print(f"Image skipped - {image}")
-	   	else:
- 			image_url = f"{base_url}/{image}"
-            		response = requests.get(image_url).content
-            		with open(f"{path}/images/{image}.jpg", "wb") as handler:
-                		handler.write(response)
-                		print(f"Image downloaded - {image}")
+            if os.path.exists(f"{path}/images/{image}.jpg"):
+                print(f"Image skipped - {image}")
+            else:
+                image_url = f"{base_url}/{image}"
+                response = requests.get(image_url).content
+                with open(f"{path}/images/{image}.jpg", "wb") as handler:
+                    handler.write(response)
+                    print(f"Image downloaded - {image}")
     return
