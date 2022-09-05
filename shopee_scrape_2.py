@@ -31,6 +31,7 @@ def main():
     for category in category_list:
         keyword = category['name']
         print(f"Searching {keyword}")
+        logging.info(f"Searching {keyword}")
         df_result, json_result = shopee.global_search(keyword)
 
         # arrange saved files
@@ -39,9 +40,11 @@ def main():
         json_path = shopee.create_file(time_str + keyword.replace(" ", "_"), "json", path)
         df_result.to_csv(csv_path)
         shopee.to_json(json_path, json_result)
+        logging.info(f"{keyword} saved in {path}")
         
         # download images
         shopee.download_images(csv_path, path)
+        logging.info(f"Done downloading images for {keyword}")
 
     # logs to mark ending time
     logging.info("Getting general information: done!")
