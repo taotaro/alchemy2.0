@@ -68,7 +68,10 @@ class ProcessImageData:
 
     def detect(self):
         self.twenty_most_common()
-        self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
+        try:
+            self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
+        except:
+            self.percentage_of_first = float(self.number_counter[0][0]) / self.total_pixels
         res = self.average_colour()
         if self.percentage_of_first > 0.5:
             res = self.number_counter[0][0]
