@@ -389,7 +389,6 @@ def get_images_data(path):
 
 def run_image_processing(image_path):
     images = glob.glob(f"{image_path}/*.jpg")
-    print("images", images)
     dict_image_content = {}
     images_data_file = get_images_data(image_path)
 
