@@ -9,8 +9,9 @@ from collections import Counter
 from YOLOv6 import run_obj_detection as run_object
 from scipy.spatial import KDTree
 import webcolors
-from . import constants
 import sys
+from . import shopee_lib_2 as shopee
+import os
 
 sys.path.insert(1, "YOLOv6")
 
@@ -386,8 +387,7 @@ def get_images_data(path):
     return pd.DataFrame(images_data)
 
 
-def run_image_processing():
-    image_path = constants.PRODUCT_IMAGES_FOLDER
+def run_image_processing(image_path):
     images = glob.glob(f"{image_path}/*.jpg")
     dict_image_content = {}
     images_data_file = get_images_data(image_path)
@@ -408,4 +408,9 @@ def run_image_processing():
 
 
 if __name__ == "__main__":
-    run_image_processing()
+    category_list, subcategory_list = shopee.category_tree_search()
+    for category in category_list:
+        keyword = category['name']
+        path = shopee.create_folder(keyword)
+        image_path = os.path.join(path, "images")
+        run_image_processing(image_path)

@@ -9,6 +9,7 @@ import random
 from . import constants
 import os
 import glob
+import oss2
 
 time_str = time.strftime("%Y-%m-%d")
 logging.basicConfig(
@@ -193,10 +194,10 @@ def to_json(path, result):
         json.dump(result, file)
 
 # find folder destination and create one if it doesn't exist
-def create_folder(folder_name):
+def create_folder(folder_name, parent_folder="data"):
     if " " in folder_name:
         folder_name = folder_name.replace(" ", "_")
-    folder_path = os.path.join(os.getcwd(), "data", folder_name)
+    folder_path = os.path.join(os.getcwd(), parent_folder, folder_name)
     #if folder does not exist, create one
     if os.path.exists(folder_path):
         print(f"Directory existed: {folder_path}")
@@ -215,7 +216,7 @@ def create_file(filename, type, path=""):
     full_path = os.path.join(path, full_filename)
     return full_path
 
-
+# get category names and the tree list
 def category_tree_search():
     category_list = []
     subcategory_list = []
@@ -248,6 +249,7 @@ def category_tree_search():
         
     return category_list, subcategory_list
 
+
 def download_images(csv_path, path):
     file = pd.read_csv(csv_path)
 
@@ -257,20 +259,47 @@ def download_images(csv_path, path):
         print(f"Directory existed: {path}/images/")
     base_url = "https://cf.shopee.sg/file"
 
-    for image_list in file['product.images']:
-        images = literal_eval(image_list)
+    if file["product.images"]:
+        for image_list in file['product.images']:
+            images = literal_eval(image_list)
 
-        for image in images:
-            if os.path.exists(f"{path}/images/{image}.jpg"):
-                print(f"Image skipped - {image}")
-            else:
-                image_url = f"{base_url}/{image}"
-                response = requests.get(image_url).content
-                try:
-                    with open(f"{path}/images/{image}.jpg", "wb") as handler:
-                        handler.write(response)
-                        print(f"Image downloaded - {image}")
-                except Exception as e:
-                    print(f"Image failed to download - {image}")
+            for image in images:
+                if os.path.exists(f"{path}/images/{image}.jpg"):
+                    print(f"Image skipped - {image}")
+                else:
+                    image_url = f"{base_url}/{image}"
+                    response = requests.get(image_url).content
+                    try:
+                        with open(f"{path}/images/{image}.jpg", "wb") as handler:
+                            handler.write(response)
+                            print(f"Image downloaded - {image}")
+                    except Exception as e:
+                        print(f"Image failed to download - {image}")
+    else:
+      print("No images")
 
     return
+
+
+# def upload_images(csv_path, keyword):
+#     file = pd.read_csv(csv_path)
+#     base_url = "https://cf.shopee.sg/file"
+#     auth = oss2.Auth(constants.OSS_ACCESS_ID, constants.OSS_SECRET_KEY)
+#     bucket = oss2.Bucket(auth, constants.OSS_ENDPOINT, constants.OSS_BUCKET)
+
+#     if file["product.images"]:
+#         for image_list in file['product.images']:
+#             images = literal_eval(image_list)
+
+#             for image in images:
+#                 image_url = f"{base_url}/{image}"
+#                 response = requests.get(image_url).content
+#                 try:
+#                     bucket.put_object(f"{keyword}/{image}.jpg", response)
+#                     print(f"Image uploaded - {image}")
+#                 except Exception:
+#                     print(f"Image failed to download - {image}")
+#     else:
+#       print("No images")
+
+#     return
