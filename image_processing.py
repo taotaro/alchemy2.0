@@ -389,6 +389,7 @@ def get_images_data(path):
 
 def run_image_processing(image_path):
     images = glob.glob(f"{image_path}/*.jpg")
+    print("images", images)
     dict_image_content = {}
     images_data_file = get_images_data(image_path)
 
@@ -414,4 +415,5 @@ if __name__ == "__main__":
         keyword = category['name']
         path = shopee.create_folder(keyword)
         image_path = os.path.join(path, "images")
+        shopee.create_folder("images")
         run_image_processing(image_path)
