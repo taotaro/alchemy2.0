@@ -414,5 +414,5 @@ if __name__ == "__main__":
         keyword = category['name']
         path = shopee.create_folder(keyword)
         image_path = os.path.join(path, "images")
-        shopee.create_folder("images")
+        shopee.create_folder(f"{keyword}/images")
         run_image_processing(image_path)
