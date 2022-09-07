@@ -325,7 +325,7 @@ class ProcessImageData:
             orientation = 0
         else:
             orientation = cummTheta / ct
-        print("Image orientation in degress: ", orientation)
+        print("Image orientation in degrees: ", orientation)
         return orientation
 
 
@@ -381,8 +381,8 @@ def get_images_data(path):
         images_data["Angle"].append(angle)
         images_data["Pixels (Height, Width)"].append(height_and_width)
         images_data["Borders exist"].append(border)
-        for i in images_data.keys():
-            print(f"{i} ==== {len(images_data[i])}")
+        # for i in images_data.keys():
+        #     print(f"{i} ==== {len(images_data[i])}")
 
     return pd.DataFrame(images_data)
 
@@ -400,12 +400,12 @@ def run_image_processing(image_path):
         run_object.args["source"] = image
         dict_image_content = run_object.run_object_detection()
 
-    image_contents = pd.DataFrame(dict_image_content)
-    image_contents.to_csv(f"{image_path}/images_objects.csv")
-    images_data_file.to_csv(f"{image_path}/images_features.csv")
+        image_contents = pd.DataFrame(dict_image_content)
+        image_contents.to_csv(f"{image_path}/images_objects.csv")
+        images_data_file.to_csv(f"{image_path}/images_features.csv")
 
-    result = pd.concat([images_data_file, image_contents], axis=1)
-    result.to_csv(f"{image_path}/image_result_data.csv")
+        result = pd.concat([images_data_file, image_contents], axis=1)
+        result.to_csv(f"{image_path}/image_result_data.csv")
 
 
 if __name__ == "__main__":
