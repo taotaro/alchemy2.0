@@ -368,7 +368,7 @@ def get_images_data(path):
         images_data["Closest Color Name"].append(closest_name)
         images_data["20 common colors"].append(colors)
         images_data["ID_and_Image_Number"].append(
-            name.split("/")[-1] + name.split("-number")[1]
+            name.split("/")[-1] + name.split("-number")[0]
         )
         images_data["Brightness"].append(brightness_result)
         images_data["Background_Color"].append(bg_color)
