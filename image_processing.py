@@ -242,7 +242,7 @@ class ProcessImageData:
             cropped_image = img_1[
                 top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]
             ]
-            cv2.imshow("crop", cropped_image)
+            # cv2.imshow("crop", cropped_image)
             w, h = cropped_image.shape[:2]
             print(f"text_pixels={text_pixels}, h= {h}, w={w}")
             text_pixels = text_pixels + (w * h)
