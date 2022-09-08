@@ -251,7 +251,11 @@ def category_tree_search():
 
 
 def download_images(csv_path, path):
-    file = pd.read_csv(csv_path)
+    try:
+        file = pd.read_csv(csv_path)
+    except:
+        print(f"File not found - {csv_path}")
+        return
 
     try:
         os.makedirs(f"{path}/images/")
