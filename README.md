@@ -16,6 +16,10 @@ Stable version of alchemy. Libraries are implemented. No Jupyter notebooks are a
       ```
       git push --force
       ```
+    - Install the most updated packages from ```requirements.txt```:
+      ```
+      pip3 install -r requirements.txt
+      ```
 3. When all code changes have been finished in your feature branch, create a Pull Request and your peers review it before merging.
 4. Update the ```requirements.txt``` if there are any new modules you installed. How to update: 
     ```
