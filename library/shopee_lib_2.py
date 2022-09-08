@@ -259,7 +259,7 @@ def download_images(csv_path, path):
         print(f"Directory existed: {path}/images/")
     base_url = "https://cf.shopee.sg/file"
 
-    if file["product.images"]:
+    if file["product.images"].any():
         for image_list in file['product.images']:
             images = literal_eval(image_list)
 
