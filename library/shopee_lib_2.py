@@ -197,6 +197,8 @@ def to_json(path, result):
 def create_folder(folder_name, parent_folder="data"):
     if " " in folder_name:
         folder_name = folder_name.replace(" ", "_")
+    if " " in parent_folder:
+        parent_folder = parent_folder.replace(" ", "_")
     folder_path = os.path.join(os.getcwd(), parent_folder, folder_name)
     #if folder does not exist, create one
     if os.path.exists(folder_path):
