@@ -60,6 +60,10 @@ def main():
                 shopee.to_json(json_path_sub, json_result_sub)
                 logging.info(f"{keyword_sub} saved in {path_sub}")
 
+                # download images
+                shopee.download_images(csv_path_sub, path_sub)
+                logging.info(f"Done downloading images for {keyword_sub}")
+
     # logs to mark ending time
     logging.info("Getting general information: done!")
     logging.info(f"--- {time.time() - start_time} seconds for general information ---")
