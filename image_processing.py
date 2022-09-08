@@ -68,21 +68,19 @@ class ProcessImageData:
 
     def detect(self):
         self.twenty_most_common()
+        res = (0,0,0)
         try:
             self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
+            res = self.average_colour()
         except:
-            self.percentage_of_first = float(self.number_counter[0][0]) / self.total_pixels
-        res = self.average_colour()
+            self.percentage_of_first = 0
         if self.percentage_of_first > 0.5:
             res = self.number_counter[0][0]
-        else:
-            self.average_colour()
         return res
 
     def blur_check(self, image_path):
         i = image_path
         image_file = i
-        blur_threshold = 100
 
         # Doc anh tu file
         image_path = cv2.imread(image_file)
