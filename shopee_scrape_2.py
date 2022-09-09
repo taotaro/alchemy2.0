@@ -113,6 +113,31 @@ def download():
     logging.info(f"--- {time.time() - start_time} seconds for images ---")
 
 
+def upload():
+    # logs to mark starting time
+    start_time = time.time()
+    logging.info("Uploading images: Start...")
+
+    main_path = os.path.join(os.getcwd(), "data")
+    csv_files = glob.glob(f"{main_path}/*/*.csv")
+    for file in csv_files:
+        print(f"File retrieved: {file}")
+        folder = os.path.dirname(file)
+        print(f"Folder retrieved: {folder}")
+        shopee.upload_images(file, folder)
+
+    csv_files_sub = glob.glob(f"{main_path}/*/*/*.csv")
+    for file_sub in csv_files_sub:
+        print(f"File retrieved: {file_sub}")
+        folder_sub = os.path.dirname(file_sub)
+        print(f"Folder retrieved: {folder_sub}")
+        shopee.upload_images(file_sub, folder_sub)
+
+    # logs to mark ending time
+    logging.info("Uploading images: done!")
+    logging.info(f"--- {time.time() - start_time} seconds for images ---")
+
+
 def process():
     main_path = os.path.join(os.getcwd(), "data")
     image_folders = glob.glob(f"{main_path}/*/images/")
