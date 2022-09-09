@@ -265,24 +265,27 @@ def download_images(csv_path, path):
         print(f"Directory existed: {path}/images/")
     base_url = "https://cf.shopee.sg/file"
 
-    if file["product.images"].any():
-        for image_list in file['product.images']:
-            images = literal_eval(image_list)
+    try:
+        if file["product.images"].any():
+            for image_list in file['product.images']:
+                images = literal_eval(image_list)
 
-            for image in images:
-                if os.path.exists(f"{path}/images/{image}.jpg"):
-                    print(f"Image skipped - {image}")
-                else:
-                    image_url = f"{base_url}/{image}"
-                    response = requests.get(image_url).content
-                    try:
-                        with open(f"{path}/images/{image}.jpg", "wb") as handler:
-                            handler.write(response)
-                            print(f"Image downloaded - {image}")
-                    except Exception as e:
-                        print(f"Image failed to download - {image}")
-    else:
-      print("No images")
+                for image in images:
+                    if os.path.exists(f"{path}/images/{image}.jpg"):
+                        print(f"Image skipped - {image}")
+                    else:
+                        image_url = f"{base_url}/{image}"
+                        response = requests.get(image_url).content
+                        try:
+                            with open(f"{path}/images/{image}.jpg", "wb") as handler:
+                                handler.write(response)
+                                print(f"Image downloaded - {image}")
+                        except:
+                            print(f"Image failed to download - {image}")
+        else:
+          print("No images")
+    except:
+      print("No images found")
 
     return
 
