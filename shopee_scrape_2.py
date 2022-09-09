@@ -8,6 +8,7 @@ from library import constants
 from library import shopee_lib_2 as shopee
 from library.product_class import Product
 from library import image_lib as img
+import options
 
 
 time_str = time.strftime("%Y-%m-%d")
@@ -126,11 +127,16 @@ def process():
 
 
 if __name__ == "__main__":
-    input_scrape = query_yes_no("Scrape?")
-    input_download = query_yes_no("Download?")
-    input_process = query_yes_no("Process?")
+    # choose modes from cmd line input
+    # input_scrape = query_yes_no("Scrape?")
+    # input_download = query_yes_no("Download?")
+    # input_process = query_yes_no("Process?")
 
-    
+    # choose modes from options.py file
+    input_scrape = options.INPUT_SCRAPE
+    input_download = options.INPUT_DOWNLOAD
+    input_process = options.INPUT_PROCESS
+
     if input_scrape:
         scraper()
     else:
