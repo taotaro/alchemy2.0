@@ -261,7 +261,7 @@ def download_images(csv_path, path):
 
     try:
         os.makedirs(f"{path}/images/")
-    except Exception as e:
+    except:
         print(f"Directory existed: {path}/images/")
     base_url = "https://cf.shopee.sg/file"
 
