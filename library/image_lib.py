@@ -10,7 +10,7 @@ from YOLOv6 import run_obj_detection as run_object
 from scipy.spatial import KDTree
 import webcolors
 import sys
-from . import shopee_lib_2 as shopee
+from library import shopee_lib_2 as shopee
 import os
 
 sys.path.insert(1, "YOLOv6")
@@ -68,18 +68,19 @@ class ProcessImageData:
 
     def detect(self):
         self.twenty_most_common()
-        self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
-        res = self.average_colour()
+        res = (0,0,0)
+        try:
+            self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
+            res = self.average_colour()
+        except:
+            self.percentage_of_first = 0
         if self.percentage_of_first > 0.5:
             res = self.number_counter[0][0]
-        else:
-            self.average_colour()
         return res
 
     def blur_check(self, image_path):
         i = image_path
         image_file = i
-        blur_threshold = 100
 
         # Doc anh tu file
         image_path = cv2.imread(image_file)
@@ -242,7 +243,7 @@ class ProcessImageData:
             cropped_image = img_1[
                 top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]
             ]
-            cv2.imshow("crop", cropped_image)
+            # cv2.imshow("crop", cropped_image)
             w, h = cropped_image.shape[:2]
             print(f"text_pixels={text_pixels}, h= {h}, w={w}")
             text_pixels = text_pixels + (w * h)
@@ -325,7 +326,7 @@ class ProcessImageData:
             orientation = 0
         else:
             orientation = cummTheta / ct
-        print("Image orientation in degress: ", orientation)
+        print("Image orientation in degrees: ", orientation)
         return orientation
 
 
@@ -368,7 +369,7 @@ def get_images_data(path):
         images_data["Closest Color Name"].append(closest_name)
         images_data["20 common colors"].append(colors)
         images_data["ID_and_Image_Number"].append(
-            name.split("/")[-1] + name.split("-number")[1]
+            name.split("/")[-1] + name.split("-number")[0]
         )
         images_data["Brightness"].append(brightness_result)
         images_data["Background_Color"].append(bg_color)
@@ -381,8 +382,8 @@ def get_images_data(path):
         images_data["Angle"].append(angle)
         images_data["Pixels (Height, Width)"].append(height_and_width)
         images_data["Borders exist"].append(border)
-        for i in images_data.keys():
-            print(f"{i} ==== {len(images_data[i])}")
+        # for i in images_data.keys():
+        #     print(f"{i} ==== {len(images_data[i])}")
 
     return pd.DataFrame(images_data)
 
@@ -393,18 +394,19 @@ def run_image_processing(image_path):
     images_data_file = get_images_data(image_path)
 
     for image in images:
+        print(f"Detecting {image}...")
         run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
         run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
         run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
         run_object.args["source"] = image
         dict_image_content = run_object.run_object_detection()
 
-    image_contents = pd.DataFrame(dict_image_content)
-    image_contents.to_csv(f"{image_path}/images_objects.csv")
-    images_data_file.to_csv(f"{image_path}/images_features.csv")
+        image_contents = pd.DataFrame(dict_image_content)
+        image_contents.to_csv(f"{image_path}/images_objects.csv")
+        images_data_file.to_csv(f"{image_path}/images_features.csv")
 
-    result = pd.concat([images_data_file, image_contents], axis=1)
-    result.to_csv(f"{image_path}/image_result_data.csv")
+        result = pd.concat([images_data_file, image_contents], axis=1)
+        result.to_csv(f"{image_path}/image_result_data.csv")
 
 
 if __name__ == "__main__":
@@ -413,4 +415,5 @@ if __name__ == "__main__":
         keyword = category['name']
         path = shopee.create_folder(keyword)
         image_path = os.path.join(path, "images")
+        shopee.create_folder(f"{keyword}/images")
         run_image_processing(image_path)

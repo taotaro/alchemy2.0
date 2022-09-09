@@ -7,6 +7,7 @@ import glob
 from library import constants
 from library import shopee_lib_2 as shopee
 from library.product_class import Product
+from library import image_lib as img
 
 
 time_str = time.strftime("%Y-%m-%d")
@@ -111,15 +112,36 @@ def download():
     logging.info(f"--- {time.time() - start_time} seconds for images ---")
 
 
+def process():
+    main_path = os.path.join(os.getcwd(), "data")
+    image_folders = glob.glob(f"{main_path}/*/images/")
+    for folder in image_folders:
+        print(f"{folder}")
+        img.run_image_processing(folder)
+
+    image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
+    for folder_sub in image_folders_sub:
+        print(f"{folder_sub}")
+        img.run_image_processing(folder_sub)
+
+
 if __name__ == "__main__":
     input_scrape = query_yes_no("Scrape?")
     input_download = query_yes_no("Download?")
+    input_process = query_yes_no("Process?")
+
     
     if input_scrape:
         scraper()
     else:
         print("No scaper")
+
     if input_download:
         download()
     else:
         print("No download")
+
+    if input_process:
+        process()
+    else:
+        print("No process")
