@@ -8,6 +8,7 @@ from library import constants
 from library import shopee_lib_2 as shopee
 from library.product_class import Product
 from library import image_lib as img
+from library import shopee_class
 import options
 
 
@@ -65,6 +66,7 @@ def scraper():
         json_path = shopee.create_file(time_str + keyword.replace(" ", "_"), "json", path)
         df_result.to_csv(csv_path)
         shopee.to_json(json_path, json_result)
+        shopee_class.to_db(df_result)
         logging.info(f"{keyword} saved in {path}")
 
         for subcategory in subcategory_list:
@@ -81,6 +83,7 @@ def scraper():
                 json_path_sub = shopee.create_file(time_str + keyword_sub.replace(" ", "_"), "json", path_sub)
                 df_result_sub.to_csv(csv_path_sub)
                 shopee.to_json(json_path_sub, json_result_sub)
+                shopee_class.to_db(df_result_sub)
                 logging.info(f"{keyword_sub} saved in {path_sub}")
 
     # logs to mark ending time
@@ -163,16 +166,25 @@ if __name__ == "__main__":
     input_process = True
 
     if input_scrape:
-        scraper()
+        try:
+            scraper()
+        except:
+            print("SCRAPER FAILED")
     else:
         print("No scaper")
 
     if input_download:
-        download()
+        try:
+            download()
+        except:
+            print("DOWNLOAD FAILED")
     else:
         print("No download")
 
     if input_process:
-        process()
+        try:
+            process()
+        except:
+            print("PROCESS FAILED")
     else:
         print("No process")
