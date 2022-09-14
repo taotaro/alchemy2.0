@@ -161,9 +161,9 @@ if __name__ == "__main__":
     # input_process = query_yes_no("Process?")
 
     # choose modes from options.py file
-    input_scrape = True
-    input_download = True
-    input_process = True
+    input_scrape = options.INPUT_SCRAPE
+    input_download = options.INPUT_DOWNLOAD
+    input_process = options.INPUT_PROCESS
 
     if input_scrape:
         try:
