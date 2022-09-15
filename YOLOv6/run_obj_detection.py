@@ -224,7 +224,7 @@ def run_object_detection():
         label = None if args['hide-labels'] else (
             inferer.class_names[class_num] if args['hide-conf'] else f'{inferer.class_names[class_num]} {conf:.2f}')
         image_objects_list.append(inferer.class_names[class_num])
-        print("image_objects_list", image_objects_list)
+        print(image_objects_list)
         Inferer.plot_box_and_label(img_src, max(round(sum(img_src.shape) / 2 * 0.003), 2), xyxy, label,
                                    color=Inferer.generate_colors(class_num, True), fps=fps_txt)
 
@@ -237,7 +237,7 @@ def run_object_detection():
     image_content['Image_objects'].append(image_objects_list)
 
     # cv2.imshow("object detection", image)
-    cv2.waitKey()
+    # cv2.waitKey()
     return image_content
 
 
