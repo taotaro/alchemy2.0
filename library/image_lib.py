@@ -392,21 +392,21 @@ def run_image_processing(image_path):
     images = glob.glob(f"{image_path}/*.jpg")
     dict_image_content = {}
     images_data_file = get_images_data(image_path)
+    images_data_file.to_csv(f"{image_path}/images_features.csv")
 
-    for image in images:
-        print(f"Detecting {image}")
-        run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
-        run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
-        run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
-        run_object.args["source"] = image
-        dict_image_content = run_object.run_object_detection()
+    # for image in images:
+    #     print(f"Detecting {image}")
+    #     run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
+    #     run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
+    #     run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
+    #     run_object.args["source"] = image
+    #     dict_image_content = run_object.run_object_detection()
 
-        image_contents = pd.DataFrame(dict_image_content)
-        image_contents.to_csv(f"{image_path}/images_objects.csv")
-        images_data_file.to_csv(f"{image_path}/images_features.csv")
+    #     image_contents = pd.DataFrame(dict_image_content)
+    #     image_contents.to_csv(f"{image_path}/images_objects.csv")
 
-        result = pd.concat([images_data_file, image_contents], axis=1)
-        result.to_csv(f"{image_path}/image_result_data.csv")
+    #     result = pd.concat([images_data_file, image_contents], axis=1)
+    #     result.to_csv(f"{image_path}/image_result_data.csv")
 
 
 if __name__ == "__main__":
