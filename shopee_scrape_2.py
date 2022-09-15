@@ -10,7 +10,7 @@ from library.product_class import Product
 from library import image_lib as img
 from library import shopee_class
 import options
-
+import traceback
 
 time_str = time.strftime("%Y-%m-%d")
 logging.basicConfig(filename=f"logs/run-{time_str}.log", level=logging.INFO, format="%(asctime)s:%(levelname)s:%(message)s")
@@ -167,9 +167,11 @@ if __name__ == "__main__":
 
     if input_scrape:
         try:
+            shopee_class.init_db()
             scraper()
         except:
-            print("SCRAPER FAILED")
+            print(f"SCRAPER FAILED\n{traceback.format_exc()}")
+        shopee_class.discon_db()
     else:
         print("No scaper")
 
@@ -177,7 +179,7 @@ if __name__ == "__main__":
         try:
             download()
         except:
-            print("DOWNLOAD FAILED")
+            print(f"DOWNLOAD FAILED\n{traceback.format_exc()}")
     else:
         print("No download")
 
@@ -185,6 +187,6 @@ if __name__ == "__main__":
         try:
             process()
         except:
-            print("PROCESS FAILED")
+            print(f"PROCESS FAILED\n{traceback.format_exc()}")
     else:
         print("No process")

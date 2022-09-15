@@ -181,7 +181,6 @@ def global_search(keyword):
                 }
                 df_result.append(ts_product)
                 json_result[page] = [ts_product]
-            print(f"Page {page} - Done")
     else:
         print("no pages found")
 
