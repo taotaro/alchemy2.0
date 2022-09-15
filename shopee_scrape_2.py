@@ -145,13 +145,14 @@ def process():
     main_path = os.path.join(os.getcwd(), "data")
     image_folders = glob.glob(f"{main_path}/*/images/")
     for folder in image_folders:
-        print(f"{folder}")
-        img.run_image_processing(folder)
+        if ".jpg" not in folder:
+          print(f"Folder: {folder}")
+          img.run_image_processing(folder)
 
-    image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
-    for folder_sub in image_folders_sub:
-        print(f"{folder_sub}")
-        img.run_image_processing(folder_sub)
+    # image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
+    # for folder_sub in image_folders_sub:
+    #     print(f"{folder_sub}")
+    #     img.run_image_processing(folder_sub)
 
 
 if __name__ == "__main__":
