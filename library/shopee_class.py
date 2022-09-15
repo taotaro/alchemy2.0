@@ -116,8 +116,11 @@ def save_product(dic):
         "catid": dic["product.catid"],
     }
     product_obj.product = product
-    product_obj.save()
-    print(f"Saved -- {dic['product.itemid']}")
+    try:
+        product_obj.save()
+        print(f"Saved -- {dic['product.itemid']}")
+    except:
+        print(f"Not saved -- {dic['product.itemid']}")
     return
 
 def to_db(df):
