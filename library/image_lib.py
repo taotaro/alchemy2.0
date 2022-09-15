@@ -394,7 +394,7 @@ def run_image_processing(image_path):
     images_data_file = get_images_data(image_path)
 
     for image in images:
-        print(f"Detecting {image}...")
+        print(f"Detecting {image}")
         run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
         run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
         run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
