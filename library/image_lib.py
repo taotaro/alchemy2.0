@@ -351,40 +351,42 @@ def get_images_data(path):
 
     images = glob.glob(f"{path}/*.jpg")
     # print(len(images))
-    for image in images:
-        name = image.replace(".jpg", "")
-        width, height = cv2.imread(image).shape[:2]
-        height_and_width = [height, width]
-        process_image = ProcessImageData(image)
-        bg_color = process_image.detect()
-        colors = process_image.twenty_most_common_colors()
-        brightness_result = process_image.brightness_check(image)
-        contrast_res_v1 = process_image.check_contrast(image)
-        blur_res = process_image.blur_check(image)
-        contrast_res_v2 = process_image.contrast_calc(image)
-        closest_name = process_image.convert_rgb_to_names(bg_color)
-        border = process_image.border_check(image)
-        image_text, text_covered_area, text_colors = process_image.text_extract(image)
-        angle = process_image.orientation_calculation(image)
+    with alive_bar(len(images)) as bar:
+        for image in images:
+            name = image.replace(".jpg", "")
+            width, height = cv2.imread(image).shape[:2]
+            height_and_width = [height, width]
+            process_image = ProcessImageData(image)
+            bg_color = process_image.detect()
+            colors = process_image.twenty_most_common_colors()
+            brightness_result = process_image.brightness_check(image)
+            contrast_res_v1 = process_image.check_contrast(image)
+            blur_res = process_image.blur_check(image)
+            contrast_res_v2 = process_image.contrast_calc(image)
+            closest_name = process_image.convert_rgb_to_names(bg_color)
+            border = process_image.border_check(image)
+            image_text, text_covered_area, text_colors = process_image.text_extract(image)
+            angle = process_image.orientation_calculation(image)
 
-        images_data["Closest Color Name"].append(closest_name)
-        images_data["20 common colors"].append(colors)
-        images_data["ID_and_Image_Number"].append(
-            name.split("/")[-1] + name.split("-number")[0]
-        )
-        images_data["Brightness"].append(brightness_result)
-        images_data["Background_Color"].append(bg_color)
-        images_data["Blurriness"].append(blur_res)
-        images_data["Contrast (Michelson)"].append(contrast_res_v1)
-        images_data["Contrast"].append(contrast_res_v2)
-        images_data["Text"].append(image_text)
-        images_data["Text Covered Area"].append(text_covered_area)
-        images_data["Text colors"].append(text_colors)
-        images_data["Angle"].append(angle)
-        images_data["Pixels (Height, Width)"].append(height_and_width)
-        images_data["Borders exist"].append(border)
-        # for i in images_data.keys():
-        #     print(f"{i} ==== {len(images_data[i])}")
+            images_data["Closest Color Name"].append(closest_name)
+            images_data["20 common colors"].append(colors)
+            images_data["ID_and_Image_Number"].append(
+                name.split("/")[-1] + name.split("-number")[0]
+            )
+            images_data["Brightness"].append(brightness_result)
+            images_data["Background_Color"].append(bg_color)
+            images_data["Blurriness"].append(blur_res)
+            images_data["Contrast (Michelson)"].append(contrast_res_v1)
+            images_data["Contrast"].append(contrast_res_v2)
+            images_data["Text"].append(image_text)
+            images_data["Text Covered Area"].append(text_covered_area)
+            images_data["Text colors"].append(text_colors)
+            images_data["Angle"].append(angle)
+            images_data["Pixels (Height, Width)"].append(height_and_width)
+            images_data["Borders exist"].append(border)
+            # for i in images_data.keys():
+            #     print(f"{i} ==== {len(images_data[i])}")
+            bar()
 
     return pd.DataFrame(images_data)
 
