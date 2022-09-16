@@ -145,11 +145,10 @@ def upload():
 def process():
     main_path = os.path.join(os.getcwd(), "data")
     image_folders = glob.glob(f"{main_path}/*/images/")
-    with alive_bar(100) as bar:
+    with alive_bar(1000) as bar:
         for folder in image_folders:
-            if ".jpg" not in folder:
-              print(f"Folder: {folder}")
-              img.run_image_processing(folder)
+            print(f"Folder: {folder}")
+            img.run_image_processing(folder)
             bar()
 
     # image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
