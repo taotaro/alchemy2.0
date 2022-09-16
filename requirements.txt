@@ -1,5 +1,7 @@
+about-time==3.1.1
 absl-py==1.2.0
 addict==2.4.0
+alive-progress==2.4.1
 aliyun-python-sdk-core==2.13.36
 aliyun-python-sdk-kms==2.16.0
 astunparse==1.6.3
@@ -22,6 +24,7 @@ gast==0.4.0
 google-auth==2.11.0
 google-auth-oauthlib==0.4.6
 google-pasta==0.2.0
+grapheme==0.6.0
 grpcio==1.47.0
 h11==0.13.0
 h5py==3.7.0
