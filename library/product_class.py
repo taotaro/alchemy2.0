@@ -6,7 +6,7 @@ import traceback
 import time
 import random
 from jsonmerge import merge
-import constants
+from . import constants
 import json
 
 time_str = time.strftime("%Y-%m-%d")

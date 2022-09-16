@@ -6,12 +6,13 @@ import time
 import pandas as pd
 import numpy as np
 from collections import Counter
-import traceback
-import YOLOv6.run_obj_detection as run_object
+from YOLOv6 import run_obj_detection as run_object
 from scipy.spatial import KDTree
 import webcolors
-from lib import constants
 import sys
+from library import shopee_lib_2 as shopee
+import os
+from alive_progress import alive_bar
 
 sys.path.insert(1, "YOLOv6")
 
@@ -68,18 +69,19 @@ class ProcessImageData:
 
     def detect(self):
         self.twenty_most_common()
-        self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
-        res = self.average_colour()
+        res = (0,0,0)
+        try:
+            self.percentage_of_first = float(self.number_counter[0][1]) / self.total_pixels
+            res = self.average_colour()
+        except:
+            self.percentage_of_first = 0
         if self.percentage_of_first > 0.5:
             res = self.number_counter[0][0]
-        else:
-            self.average_colour()
         return res
 
     def blur_check(self, image_path):
         i = image_path
         image_file = i
-        blur_threshold = 100
 
         # Doc anh tu file
         image_path = cv2.imread(image_file)
@@ -231,7 +233,7 @@ class ProcessImageData:
 
         text_pixels = 0
         text_color = []
-        print(f"TOTAL PIXELS {total_num_pixels}")
+        # print(f"TOTAL PIXELS {totapip l_num_pixels}")
         for (bbox, text, prob) in output:
             (top_left, top_right, bottom_right, bottom_left) = bbox
             top_left = (int(top_left[0]), int(top_left[1]))
@@ -242,19 +244,19 @@ class ProcessImageData:
             cropped_image = img_1[
                 top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]
             ]
-            cv2.imshow("crop", cropped_image)
+            # cv2.imshow("crop", cropped_image)
             w, h = cropped_image.shape[:2]
-            print(f"text_pixels={text_pixels}, h= {h}, w={w}")
+            # print(f"text_pixels={text_pixels}, h= {h}, w={w}")
             text_pixels = text_pixels + (w * h)
             text_image = ProcessImageData(cropped_image)
             bg_color_of_text = text_image.detect()
-            print(bg_color_of_text)
+            # print(bg_color_of_text)
             text_bg_color_name = text_image.convert_rgb_to_names(bg_color_of_text)
             colors = text_image.twenty_most_common_colors()
             for color in colors:
                 if color[0] != text_bg_color_name:
                     text_color.append(color[0])
-            print(f"[INFO] {prob:.2f} = {text}")
+            # print(f"[INFO] {prob:.2f} = {text}")
         if text_pixels == 0:
             text_percentage_of_image = 0
         else:
@@ -325,7 +327,7 @@ class ProcessImageData:
             orientation = 0
         else:
             orientation = cummTheta / ct
-        print("Image orientation in degress: ", orientation)
+        # print("Image orientation in degrees: ", orientation)
         return orientation
 
 
@@ -348,65 +350,74 @@ def get_images_data(path):
     }
 
     images = glob.glob(f"{path}/*.jpg")
-    print(len(images))
-    for image in images:
-        name = image.replace(".jpg", "")
-        width, height = cv2.imread(image).shape[:2]
-        height_and_width = [height, width]
-        process_image = ProcessImageData(image)
-        bg_color = process_image.detect()
-        colors = process_image.twenty_most_common_colors()
-        brightness_result = process_image.brightness_check(image)
-        contrast_res_v1 = process_image.check_contrast(image)
-        blur_res = process_image.blur_check(image)
-        contrast_res_v2 = process_image.contrast_calc(image)
-        closest_name = process_image.convert_rgb_to_names(bg_color)
-        border = process_image.border_check(image)
-        image_text, text_covered_area, text_colors = process_image.text_extract(image)
-        angle = process_image.orientation_calculation(image)
+    # print(len(images))
+    with alive_bar(len(images)) as bar:
+        for image in images:
+            name = image.replace(".jpg", "")
+            width, height = cv2.imread(image).shape[:2]
+            height_and_width = [height, width]
+            process_image = ProcessImageData(image)
+            bg_color = process_image.detect()
+            colors = process_image.twenty_most_common_colors()
+            brightness_result = process_image.brightness_check(image)
+            contrast_res_v1 = process_image.check_contrast(image)
+            blur_res = process_image.blur_check(image)
+            contrast_res_v2 = process_image.contrast_calc(image)
+            closest_name = process_image.convert_rgb_to_names(bg_color)
+            border = process_image.border_check(image)
+            image_text, text_covered_area, text_colors = process_image.text_extract(image)
+            angle = process_image.orientation_calculation(image)
 
-        images_data["Closest Color Name"].append(closest_name)
-        images_data["20 common colors"].append(colors)
-        images_data["ID_and_Image_Number"].append(
-            name.split("/")[-1] + name.split("-number")[1]
-        )
-        images_data["Brightness"].append(brightness_result)
-        images_data["Background_Color"].append(bg_color)
-        images_data["Blurriness"].append(blur_res)
-        images_data["Contrast (Michelson)"].append(contrast_res_v1)
-        images_data["Contrast"].append(contrast_res_v2)
-        images_data["Text"].append(image_text)
-        images_data["Text Covered Area"].append(text_covered_area)
-        images_data["Text colors"].append(text_colors)
-        images_data["Angle"].append(angle)
-        images_data["Pixels (Height, Width)"].append(height_and_width)
-        images_data["Borders exist"].append(border)
-        for i in images_data.keys():
-            print(f"{i} ==== {len(images_data[i])}")
+            images_data["Closest Color Name"].append(closest_name)
+            images_data["20 common colors"].append(colors)
+            images_data["ID_and_Image_Number"].append(
+                name.split("/")[-1] + name.split("-number")[0]
+            )
+            images_data["Brightness"].append(brightness_result)
+            images_data["Background_Color"].append(bg_color)
+            images_data["Blurriness"].append(blur_res)
+            images_data["Contrast (Michelson)"].append(contrast_res_v1)
+            images_data["Contrast"].append(contrast_res_v2)
+            images_data["Text"].append(image_text)
+            images_data["Text Covered Area"].append(text_covered_area)
+            images_data["Text colors"].append(text_colors)
+            images_data["Angle"].append(angle)
+            images_data["Pixels (Height, Width)"].append(height_and_width)
+            images_data["Borders exist"].append(border)
+            # for i in images_data.keys():
+            #     print(f"{i} ==== {len(images_data[i])}")
+            bar()
 
     return pd.DataFrame(images_data)
 
 
-def run_image_processing():
-    image_path = constants.PRODUCT_IMAGES_FOLDER
-    images = glob.glob(f"{image_path}/*.jpg")
-    dict_image_content = {}
+def run_image_processing(image_path):
     images_data_file = get_images_data(image_path)
-
-    for image in images:
-        run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
-        run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
-        run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
-        run_object.args["source"] = image
-        dict_image_content = run_object.run_object_detection()
-
-    image_contents = pd.DataFrame(dict_image_content)
-    image_contents.to_csv(f"{image_path}/images_objects.csv")
     images_data_file.to_csv(f"{image_path}/images_features.csv")
 
-    result = pd.concat([images_data_file, image_contents], axis=1)
-    result.to_csv(f"{image_path}/image_result_data.csv")
+    # images = glob.glob(f"{image_path}/*.jpg")
+    # dict_image_content = {}
+    # 
+    # for image in images:
+    #     print(f"Detecting {image}")
+    #     run_object.args["weights"] = "YOLOv6/weights/yolov6n.pt"
+    #     run_object.args["yaml"] = "YOLOv6/data/coco.yaml"
+    #     run_object.args["font"] = "YOLOv6/yolov6/utils/Arial.ttf"
+    #     run_object.args["source"] = image
+    #     dict_image_content = run_object.run_object_detection()
+
+    #     image_contents = pd.DataFrame(dict_image_content)
+    #     image_contents.to_csv(f"{image_path}/images_objects.csv")
+
+    #     result = pd.concat([images_data_file, image_contents], axis=1)
+    #     result.to_csv(f"{image_path}/image_result_data.csv")
 
 
 if __name__ == "__main__":
-    run_image_processing()
+    category_list, subcategory_list = shopee.category_tree_search()
+    for category in category_list:
+        keyword = category['name']
+        path = shopee.create_folder(keyword)
+        image_path = os.path.join(path, "images")
+        shopee.create_folder(f"{keyword}/images")
+        run_image_processing(image_path)

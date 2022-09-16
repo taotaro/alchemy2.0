@@ -9,10 +9,10 @@ from PIL import ImageFont
 import time
 import pandas as pd
 import traceback
-from yolov6.utils.events import load_yaml
-from yolov6.layers.common import DetectBackend
-from yolov6.data.data_augment import letterbox
-from yolov6.utils.nms import non_max_suppression
+from .yolov6.utils.events import load_yaml
+from .yolov6.layers.common import DetectBackend
+from .yolov6.data.data_augment import letterbox
+from .yolov6.utils.nms import non_max_suppression
 
 
 class Inferer:
