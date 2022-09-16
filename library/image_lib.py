@@ -10,7 +10,7 @@ from YOLOv6 import run_obj_detection as run_object
 from scipy.spatial import KDTree
 import webcolors
 import sys
-from library import shopee_lib_2 as shopee
+from library import shopee_lib as shopee
 import os
 from alive_progress import alive_bar
 

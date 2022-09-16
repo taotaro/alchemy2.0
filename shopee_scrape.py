@@ -5,7 +5,7 @@ import sys
 import pandas as pd
 import glob
 from library import constants
-from library import shopee_lib_2 as shopee
+from library import shopee_lib as shopee
 from library.product_class import Product
 from library import image_lib as img
 from library import shopee_class
