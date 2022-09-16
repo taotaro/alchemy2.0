@@ -354,7 +354,12 @@ def get_images_data(path):
     with alive_bar(len(images)) as bar:
         for image in images:
             name = image.replace(".jpg", "")
-            width, height = cv2.imread(image).shape[:2]
+            try: 
+                width, height = cv2.imread(image).shape[:2]
+            except:
+                os.remove(image)
+                print(f"{image} broken. Deleted.")
+                continue
             height_and_width = [height, width]
             process_image = ProcessImageData(image)
             bg_color = process_image.detect()
