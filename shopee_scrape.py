@@ -11,7 +11,6 @@ from library import image_lib as img
 from library import shopee_class
 import options
 import traceback
-from alive_progress import alive_bar
 
 time_str = time.strftime("%Y-%m-%d")
 logging.basicConfig(filename=f"logs/run-{time_str}.log", level=logging.INFO, format="%(asctime)s:%(levelname)s:%(message)s")
@@ -147,7 +146,11 @@ def process():
     image_folders = glob.glob(f"{main_path}/*/images/")
     for folder in image_folders:
         print(f"Folder: {folder}")
-        img.run_image_processing(folder)
+        try:
+            img.run_image_processing(folder)
+        except KeyboardInterrupt:
+            print ('\nCtrl+c key pressed!')
+            continue
 
     # image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
     # for folder_sub in image_folders_sub:
