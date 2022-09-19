@@ -168,7 +168,7 @@ def global_search(keyword):
     pages = get_product_list_max_page(keyword)
 
     if pages > 0:
-        with alive_bar(len(pages)) as bar:
+        with alive_bar(pages) as bar:
             for page in range(pages):
                 response = api_product_list(keyword, newest=page)
                 products = response.json()['items']
