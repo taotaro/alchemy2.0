@@ -66,7 +66,7 @@ def scraper():
         json_path = shopee.create_file(time_str + keyword.replace(" ", "_"), "json", path)
         df_result.to_csv(csv_path)
         shopee.to_json(json_path, json_result)
-        shopee_class.to_db(df_result)
+        # shopee_class.to_db(df_result)
         logging.info(f"{keyword} saved in {path}")
 
         for subcategory in subcategory_list:
@@ -83,7 +83,7 @@ def scraper():
                 json_path_sub = shopee.create_file(time_str + keyword_sub.replace(" ", "_"), "json", path_sub)
                 df_result_sub.to_csv(csv_path_sub)
                 shopee.to_json(json_path_sub, json_result_sub)
-                shopee_class.to_db(df_result_sub)
+                # shopee_class.to_db(df_result_sub)
                 logging.info(f"{keyword_sub} saved in {path_sub}")
 
     # logs to mark ending time
@@ -149,13 +149,13 @@ def process():
         try:
             img.run_image_processing(folder)
         except KeyboardInterrupt:
-            print ('\nCtrl+c key pressed!')
+            print ("\nCtrl+C key pressed! Skipping folder...")
             continue
 
-    # image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
-    # for folder_sub in image_folders_sub:
-    #     print(f"{folder_sub}")
-    #     img.run_image_processing(folder_sub)
+    image_folders_sub = glob.glob(f"{main_path}/*/*/images/")
+    for folder_sub in image_folders_sub:
+        print(f"{folder_sub}")
+        img.run_image_processing(folder_sub)
 
 
 if __name__ == "__main__":

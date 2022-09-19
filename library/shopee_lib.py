@@ -10,6 +10,7 @@ from . import constants
 import os
 import glob
 import oss2
+from alive_progress import alive_bar
 
 time_str = time.strftime("%Y-%m-%d")
 logging.basicConfig(
@@ -167,20 +168,21 @@ def global_search(keyword):
     pages = get_product_list_max_page(keyword)
 
     if pages > 0:
-        for page in range(pages):
-            response = api_product_list(keyword, newest=page)
-            products = response.json()['items']
-            print(f"Page {page} - {len(products)} Items Found")
-            for product in products:
-                # remove unnecessary parts
-                del product['item_basic']['deep_discount_skin']
-                del product['item_basic']['add_on_deal_info']
-                ts_product = {
-                  "ts": time_str,
-                  "product": product['item_basic']
-                }
-                df_result.append(ts_product)
-                json_result[page] = [ts_product]
+        with alive_bar(len(pages)) as bar:
+            for page in range(pages):
+                response = api_product_list(keyword, newest=page)
+                products = response.json()['items']
+                for product in products:
+                    # remove unnecessary parts
+                    del product['item_basic']['deep_discount_skin']
+                    del product['item_basic']['add_on_deal_info']
+                    ts_product = {
+                      "ts": time_str,
+                      "product": product['item_basic']
+                    }
+                    df_result.append(ts_product)
+                    json_result[page] = [ts_product]
+                bar()
     else:
         print("no pages found")
 
@@ -269,18 +271,19 @@ def download_images(csv_path, path):
             for image_list in file['product.images']:
                 images = literal_eval(image_list)
 
-                for image in images:
-                    if os.path.exists(f"{path}/images/{image}.jpg"):
-                        print(f"Image skipped - {image}")
-                    else:
-                        image_url = f"{base_url}/{image}"
-                        response = requests.get(image_url).content
-                        try:
-                            with open(f"{path}/images/{image}.jpg", "wb") as handler:
-                                handler.write(response)
-                                print(f"Image downloaded - {image}")
-                        except:
-                            print(f"Image failed to download - {image}")
+                with alive_bar(len(images)) as bar:
+                    for image in images:
+                        if os.path.exists(f"{path}/images/{image}.jpg"):
+                            print(f"Image skipped - {image}")
+                        else:
+                            image_url = f"{base_url}/{image}"
+                            response = requests.get(image_url).content
+                            try:
+                                with open(f"{path}/images/{image}.jpg", "wb") as handler:
+                                    handler.write(response)
+                            except:
+                                print(f"Image failed to download - {image}")
+                    bar()
         else:
           print("No images")
     except:
