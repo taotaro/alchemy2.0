@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import logging
 import time
+from alive_progress import alive_bar
 
 time_str = time.strftime("%Y-%m-%d")
 logging.basicConfig(filename=f"logs/run-{time_str}.log", level=logging.INFO, format="%(asctime)s:%(levelname)s:%(message)s")
@@ -123,6 +124,8 @@ def save_product(dic):
     return
 
 def to_db(df):
+  with alive_bar(len(df)) as bar:
     for i in np.arange(len(df)):
         temp = correct_encoding(df.iloc[i])
         save_product(temp)
+    bar()
