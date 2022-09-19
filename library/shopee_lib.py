@@ -274,7 +274,7 @@ def download_images(csv_path, path):
                 with alive_bar(len(images)) as bar:
                     for image in images:
                         if os.path.exists(f"{path}/images/{image}.jpg"):
-                            print(f"Image skipped - {image}")
+                            continue
                         else:
                             image_url = f"{base_url}/{image}"
                             response = requests.get(image_url).content
