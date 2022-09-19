@@ -118,7 +118,6 @@ def save_product(dic):
     product_obj.product = product
     try:
         product_obj.save()
-        print(f"Saved -- {dic['product.itemid']}")
     except:
         print(f"Not saved -- {dic['product.itemid']}")
     return
