@@ -7,6 +7,7 @@ aliyun-python-sdk-kms==2.16.0
 astunparse==1.6.3
 async-generator==1.10
 attrs==22.1.0
+beautifulsoup4==4.11.1
 black==22.6.0
 cachetools==5.2.0
 certifi==2022.6.15
@@ -92,6 +93,7 @@ Shapely==1.8.4
 six==1.16.0
 sniffio==1.2.0
 sortedcontainers==2.4.0
+soupsieve==2.3.2.post1
 tensorboard==2.9.1
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
