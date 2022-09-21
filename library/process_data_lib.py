@@ -3,14 +3,97 @@ from types import NoneType
 import pandas as pd
 import numpy as np
 import string
-from textblob import TextBlob
 from nltk.corpus import stopwords
 import os
 import warnings
-import file_read_lib
 stop_words=set(stopwords.words('english'))
 warnings.filterwarnings('ignore')
+from textblob import TextBlob
+import os
+import score_lib
+from collections import Counter
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.util import ngrams
+from nltk.tokenize.treebank import TreebankWordDetokenizer
+from sklearn.feature_extraction.text import CountVectorizer
+import matplotlib.pyplot as plt
+from mlxtend.feature_selection import SequentialFeatureSelector as sfs
+from sklearn.linear_model import LinearRegression
+import statsmodels.api as sm
 
+#forward selection for product category
+def sort_features_based_on_relevance(data, target, significance_level=0.05):
+    initial_features=data.columns.tolist()
+    best_features=[]
+    while(len(initial_features)>0):
+        remaining_features=list(set(initial_features)-set(best_features))
+        new_pval=pd.Series(index=remaining_features, dtype='float64')
+        for new_column in remaining_features:
+            model=sm.OLS(target, sm.add_constant(data[best_features+[new_column]])).fit()
+            new_pval[new_column]=model.pvalues[new_column]
+        min_p_value=new_pval.min()
+        if(min_p_value<significance_level):
+            best_features.append(new_pval.idxmin())
+        else:
+            break
+    return best_features
+
+def forward_selection(data, name='test', folder='test'):
+    #product_id not relevant in forward selection
+    if 'Product_id' in data.columns:
+        data=data.drop('Product_id', axis=1)
+    X=data.drop('Sales',axis=1)
+    y=data['Sales']
+    ordered_features=sort_features_based_on_relevance(X, y)
+    file_path=os.path.join(folder, name+'.txt')
+    with open(file_path, 'w') as fp:
+        fp.write('\n'.join(str(item) for item in ordered_features))
+        fp.close()
+
+# bag of words for product category
+def associated_bag_of_words(data, occurences, folder, name):
+    title_data=data['product.name'].fillna('')
+    phrase_counter=Counter()
+    title_list=[]
+
+    #get most common associated words
+    for title in title_data:
+        title_list.append(title.lower())
+        for sentence in sent_tokenize(title):
+            words=word_tokenize(sentence)
+            for phrase in ngrams(words, 3):
+                phrase_counter[TreebankWordDetokenizer().detokenize(phrase)]+=1
+    most_common_words=phrase_counter.most_common(occurences)
+    most_common_words_list=[]
+    for word, occurence in most_common_words:
+        most_common_words_list.append(word)
+    file_path=os.path.join(folder, name+'.txt')
+    with open(file_path, 'w') as fp:
+        fp.write('\n'.join(str(item) for item in most_common_words_list))
+        fp.close()
+    return most_common_words_list
+
+def bag_of_words(data, occurences):
+    title_data=data['product.name'].fillna('')
+    vectorizer=CountVectorizer(ngram_range=(1,1), stop_words='english')
+    title_vectorized=vectorizer.fit_transform(title_data)
+    title_df=pd.DataFrame(title_vectorized.toarray(), columns=vectorizer.get_feature_names())
+    total_occurences=[]
+    occurence_position=[]
+    for i in range(len(title_df.columns)):
+        location=title_df.iloc[:,i]
+        total_occurences.append(location.sum())
+        occurence_position.append(i)
+    occurence_df=pd.DataFrame({'position':occurence_position, 'Occurence':total_occurences})
+    occurence_df=occurence_df.sort_values(by=['Occurence'], ascending=False)
+    occurence_list=occurence_df['position'].tolist()
+    bag_of_words_df=pd.DataFrame()
+    for j in range(occurences):
+        bag_of_words_df[title_df.columns[occurence_list[j]]]=title_df[title_df.columns[occurence_list[j]]]
+    return bag_of_words_df
+
+
+#process product data
 def get_title_length(title):
     words=sum([word.strip(string.punctuation).isalpha() for word in title.split()])
     title_length=int(words)
@@ -23,7 +106,6 @@ def check_if_brand_in_title(title, brand):
     #if brand column is na
     if (type(brand)==float and pd.isna(brand)) or type(brand)==NoneType:
         return 0
-  
     if brand in title:
         return 1
     else:
@@ -115,8 +197,8 @@ def process_product_from_link( data, bucket, folder, category):
     df_list.append(get_shopee_related_data(background_image, wholesale, bundle_deal, verified_label, free_shipping))
 
     df_bag_of_words=pd.DataFrame()
-    bag_of_words_file=file_read_lib.get_file_from_bucket(bucket, folder, category)
-    bag_of_words=file_read_lib.get_content_from_file(bag_of_words_file)
+    bag_of_words_file=score_lib.get_file_from_bucket(bucket, folder, category)
+    bag_of_words=score_lib.get_content_from_file(bag_of_words_file)
     for word in bag_of_words:
         common_words_in_title=[]
         if word in title:
