@@ -5,7 +5,8 @@ import requests
 import time
 from bs4 import BeautifulSoup
 import traceback
-from . import constants
+# from . import constants
+import constants
 
 def get_shopee_id(url):
     # '''

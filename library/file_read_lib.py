@@ -1,5 +1,6 @@
 import os
 import re
+import oss2
 
 def get_list_from_text_file(category, folder):
     file_list=[]
@@ -15,3 +16,28 @@ def get_list_from_text_file(category, folder):
         line=lines.strip('\n')
         main_list.append(line)
     return main_list
+
+def get_file_from_bucket(bucket, folder, category):
+    file_list=[]
+    for obj in oss2.ObjectIteratorV2(bucket, prefix=folder):
+        # print(obj.key)
+        #check if subfolder, if yes ignore
+        if obj.is_prefix():
+            continue
+        else:
+            filename=obj.key
+            if re.search(category, filename):
+                return bucket.get_object(filename)
+              
+
+def get_content_from_file(file):
+    if file==None:
+        print('no files found for category')
+        return -1
+    content=file.read()
+    content_list=[]
+    for lines in content.splitlines():
+        line=lines.strip(b'\n')
+        line=line.decode('utf-8')
+        content_list.append(line)
+    return content_list

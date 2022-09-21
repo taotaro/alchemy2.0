@@ -1,3 +1,5 @@
+from re import L
+from types import NoneType
 import pandas as pd
 import numpy as np
 import string
@@ -19,8 +21,9 @@ def get_title_length(title):
 
 def check_if_brand_in_title(title, brand):
     #if brand column is na
-    if type(brand)==float and pd.isna(brand):
+    if (type(brand)==float and pd.isna(brand)) or type(brand)==NoneType:
         return 0
+  
     if brand in title:
         return 1
     else:
@@ -68,23 +71,52 @@ def get_shopee_related_data(background_image, wholesale, bundle_deal, verified_l
     }, index=[0])
     return df_shopee_related
 
-def process_product_from_link( data, category, folder):
+def process_product_from_link( data, bucket, folder, category):
+    ######## NEED TO CHECK PROPER NAMING OF ITEMS ON RESPONSE JSON FILE
     df_list=[]
     title=data['name']
-    brand='test'
-    label=data['show_official_shop_label_in_title']
-    rating=4.968
-    df_list.append(get_title_related_data(title, brand, label, rating))
+    if 'brand' in data:
+        brand=data['brand']
+    else:
+        brand='test'
+    if 'show_official_shop_label_in_title' in data:
+        label=data['show_official_shop_label_in_title']
+    else:
+        label=False
+    if 'item_rating' in data:
+        rating=data['item_rating']
+        if 'rating_star' in rating:
+            rating_star=rating['rating_star']
+    else:
+        rating_star=0
+    df_list.append(get_title_related_data(title, brand, label, rating_star))
 
-    background_image=0
-    wholesale=False
-    bundle_deal=False
-    verified_label=True
-    free_shipping=True
+    if 'transparent_background_image' in data:
+        background_image=data['transparent_background_image']
+    else:
+        background_image=False
+    if 'can_use_wholesale' in data:
+        wholesale=data['can_use_wholesale']
+    else:
+        wholesale=False
+    if 'can_use_bundle_deal' in data:
+        bundle_deal=data['can_use_bundle_deal']
+    else:
+        bundle_deal=False
+    if 'shopee_verified' in data:
+        verified_label=data['shopee_verified']
+    else:
+        verified_label=False
+    if 'show_free_shipping' in data:
+        free_shipping=data['show_free_shipping']
+    else:
+        free_shipping=False
+    # print((background_image, wholesale, bundle_deal, verified_label, free_shipping))
     df_list.append(get_shopee_related_data(background_image, wholesale, bundle_deal, verified_label, free_shipping))
 
     df_bag_of_words=pd.DataFrame()
-    bag_of_words=file_read_lib.get_list_from_text_file(category, folder)
+    bag_of_words_file=file_read_lib.get_file_from_bucket(bucket, folder, category)
+    bag_of_words=file_read_lib.get_content_from_file(bag_of_words_file)
     for word in bag_of_words:
         common_words_in_title=[]
         if word in title:
