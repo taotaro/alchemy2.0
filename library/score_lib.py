@@ -106,13 +106,11 @@ def score_product(product, sorted_features):
 
 def get_score_of_product(url):
     ##### get product information from url
-    id=get_shopee_id(url)
-    shop_id=id[0]
-    product_id=id[1]
+    shop_id, product_id = get_shopee_id(url)
     product_information=api_search_item(shop_id, product_id)
     data=product_information['data']
     #forward selection data only available to main categories 
-    category=get_category_names(product_information)[0]
+    category = get_category_names(product_information)[0]
     print(category)
 
     ##### get processed product with bag of words
@@ -125,8 +123,6 @@ def get_score_of_product(url):
     ##### final scoring of product
     score=score_product(product, sorted_features)
     return score[0]
-
-
 
 
 if __name__=='__main__':
