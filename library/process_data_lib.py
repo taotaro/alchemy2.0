@@ -1,5 +1,4 @@
 from re import L
-from types import NoneType
 import pandas as pd
 import numpy as np
 import string
@@ -10,7 +9,7 @@ stop_words=set(stopwords.words('english'))
 warnings.filterwarnings('ignore')
 from textblob import TextBlob
 import os
-import score_lib
+from . import score_lib
 from collections import Counter
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.util import ngrams
@@ -104,7 +103,7 @@ def get_title_length(title):
 
 def check_if_brand_in_title(title, brand):
     #if brand column is na
-    if (type(brand)==float and pd.isna(brand)) or type(brand)==NoneType:
+    if (type(brand)==float and pd.isna(brand)) or type(brand)==type(None):
         return 0
     if brand in title:
         return 1

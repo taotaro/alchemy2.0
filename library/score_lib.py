@@ -5,9 +5,9 @@ import requests
 import time
 from bs4 import BeautifulSoup
 import traceback
-# from . import constants
-import constants
-import process_data_lib
+from . import constants
+# import constants
+from . import process_data_lib
 import json
 import oss2
 
