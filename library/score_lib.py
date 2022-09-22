@@ -16,7 +16,14 @@ bucket=oss2.Bucket(auth, constants.ENDPOINT, constants.BUCKET)
 
 def get_shopee_id(url):
     # '''
-    # This function retrieves the shop and product id from a shopee URL
+    # This function retrieves the shop and product id from a shopee URL.
+    # The shop id is the numbers after "i." and the product is after the shop id
+    # 
+    # Input: 
+    #   - url: shopee link
+    # Output:
+    #   - shop_id: shopee shop id
+    #   - product_id: shopee item/product id
     # '''
     shop_id = url.split(".")[-2]
     product_id = url.split(".")[-1].split("?")[0]
@@ -25,6 +32,12 @@ def get_shopee_id(url):
 def api_search_item(shop_id, product_id):
     # '''
     # This function calls a shopee API to get details on one product
+    # 
+    # Input: 
+    #   - shop_id: shopee shop id
+    #   - product_id: shopee item/product id    
+    # Output:
+    #   - response: website's successful 200 response
     # '''
 
     url = f"https://shopee.sg/api/v4/item/get?shopid={shop_id}&itemid={product_id}"

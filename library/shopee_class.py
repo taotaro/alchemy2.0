@@ -71,30 +71,33 @@ def correct_encoding(dictionary):
 class shopeeProduct(me.Document):
     meta = {'db_alias': 'alchemy', 'collection': 'shopeeProducts'}
     ts = me.DateField()
-    product = me.DictField()
-    product.itemid = me.IntField(unique=True)
-    product.shopid = me.IntField()
-    product.name = me.StringField()
-    product.label_ids = me.StringField()
-    product.image = me.StringField()
-    product.images = me.StringField()
-    product.currency = me.StringField()
-    product.price = me.StringField()
-    product.price_min = me.StringField()
-    product.price_max = me.StringField()
-    product.price_min_before_discount = me.StringField()
-    product.price_max_before_discount = me.StringField()
-    product.price_before_discount = me.StringField()
-    product.stock = me.StringField()
-    product.status = me.StringField()
-    product.ctime = me.StringField()
-    product.sold = me.StringField()
-    product.historical_sold = me.StringField()
-    product.catid = me.StringField()
+    cat_id = me.IntField()
+    cat_name = me.StringField()
+    products = me.ListField()
+    products.product = me.DictField()
+    products.product.itemid = me.IntField(unique=True)
+    products.product.shopid = me.IntField()
+    products.product.name = me.StringField()
+    products.product.label_ids = me.StringField()
+    products.product.image = me.StringField()
+    products.product.images = me.StringField()
+    products.product.currency = me.StringField()
+    products.product.price = me.StringField()
+    products.product.price_min = me.StringField()
+    products.product.price_max = me.StringField()
+    products.product.price_min_before_discount = me.StringField()
+    products.product.price_max_before_discount = me.StringField()
+    products.product.price_before_discount = me.StringField()
+    products.product.stock = me.StringField()
+    products.product.status = me.StringField()
+    products.product.ctime = me.StringField()
+    products.product.sold = me.StringField()
+    products.product.historical_sold = me.StringField()
+    products.product.catid = me.StringField()
 
-def save_product(dic):
-    product_obj = shopeeProduct()
-    product_obj.ts = dic["ts"]
+def save_product(dic, cat_id, cat_name):
+    # find object with same date and category to update
+    product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name)
     product = {
         "itemid": dic["product.itemid"],
         "shopid": dic["product.shopid"],
@@ -116,16 +119,23 @@ def save_product(dic):
         "historical_sold": dic["product.historical_sold"],
         "catid": dic["product.catid"],
     }
-    product_obj.product = product
-    try:
-        product_obj.save()
-    except:
-        print(f"Not saved -- {dic['product.itemid']}")
+    print(product_obj)
+    if product_obj:
+        add_products = product_obj.products.append(product)
+        old_product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=add_products)
+    else:
+        new_product_obj = shopeeProduct()
+        new_product_obj.ts = dic["ts"]
+        new_product_obj.cat_id = cat_id
+        new_product_obj.cat_name = cat_name
+        new_product_obj.products = [product]
+        new_product_obj.save()
     return
 
-def to_db(df):
+# TO-DO: create proper time series collection
+def to_db(df, cat_id, cat_name):
   with alive_bar(len(df)) as bar:
     for i in np.arange(len(df)):
         temp = correct_encoding(df.iloc[i])
-        save_product(temp)
+        save_product(temp, cat_id, cat_name)
     bar()
