@@ -90,6 +90,12 @@ def get_content_from_file(file):
         line=line.decode('utf-8')
         content_list.append(line)
     return content_list
+def get_content_from_csv_file(file):
+    if file==None:
+        print('no files found for category')
+        return -1
+    df=pd.read_csv(file)
+    return df
 
 
 def score_product(product, sorted_features,title_related_columns, shopee_related_columns):
@@ -158,6 +164,12 @@ def get_score_of_product(url):
     features=get_file_from_bucket(bucket, 'Forward_selection/', category)
     sorted_features=get_content_from_file(features)
 
+    scores=get_file_from_bucket(bucket, 'Scores/', category)
+    scores_csv=get_content_from_csv_file(scores)
+    scores_list=scores_csv['Scores']
+    max_score=max(scores_list)
+    min_score=min(scores_list)
+
     ##### final scoring of product
     score, title_score, shopee_score=score_product(product, sorted_features, title_related_columns, shopee_related_columns)
     # shopee_only=score_product_only_by_shopee(product, sorted_features, shopee_related_columns)
@@ -168,7 +180,9 @@ def get_score_of_product(url):
       'shopee_col': shopee_related_columns,
       'score': score[0],
       'title': title_score[0],
-      'shopee': shopee_score[0]
+      'shopee': shopee_score[0],
+      'max':max_score, 
+      'min':min_score
     }
 
     return result
