@@ -91,6 +91,12 @@ def get_content_from_file(file):
         line=line.decode('utf-8')
         content_list.append(line)
     return content_list
+def get_content_from_csv_file(file):
+    if file==None:
+        print('no files found for category')
+        return -1
+    df=pd.read_csv(file)
+    return df
 
 
 def score_product(product, sorted_features,title_related_columns, shopee_related_columns):
@@ -159,21 +165,28 @@ def get_score_of_product(url):
     features=get_file_from_bucket(bucket, 'Forward_selection/', category)
     sorted_features=get_content_from_file(features)
 
+    scores=get_file_from_bucket(bucket, 'Scores/', category)
+    scores_csv=get_content_from_csv_file(scores)
+    scores_list=scores_csv['Scores']
+    max_score=max(scores_list)
+    min_score=min(scores_list)
+
     ##### final scoring of product
     score, title_score, shopee_score=score_product(product, sorted_features, title_related_columns, shopee_related_columns)
     # shopee_only=score_product_only_by_shopee(product, sorted_features, shopee_related_columns)
     # title_only=score_product_only_by_title(product, sorted_features, title_related_columns)
-    return title_related_columns, shopee_related_columns, score, title_score, shopee_score
+    return title_related_columns, shopee_related_columns, score, title_score, shopee_score, max_score, min_score
 
 
 if __name__=='__main__':
     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
-    title_col, shopee_col, score, title, shopee=get_score_of_product(test_url)
+    title_col, shopee_col, score, title, shopee, max_s, min_s=get_score_of_product(test_url)
     print('Title_attributes: ', title_col[0:10])
     print('Shopee Attributes: ', shopee_col)
     print('Score:', score)
     print('Title: ', title)
     print('Shopee: ', shopee)
+    print(max_s, min_s)
     # print('only t: ', c)
     # print('only s: ', d)
 
