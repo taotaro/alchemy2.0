@@ -170,7 +170,8 @@ def process_product_from_link( data, bucket, folder, category):
             rating_star=rating['rating_star']
     else:
         rating_star=0
-    df_list.append(get_title_related_data(title, brand, label, rating_star))
+    title_data=get_title_related_data(title, brand, label, rating_star)
+    df_list.append(title_data)
 
     if 'transparent_background_image' in data:
         background_image=data['transparent_background_image']
@@ -193,7 +194,8 @@ def process_product_from_link( data, bucket, folder, category):
     else:
         free_shipping=False
     # print((background_image, wholesale, bundle_deal, verified_label, free_shipping))
-    df_list.append(get_shopee_related_data(background_image, wholesale, bundle_deal, verified_label, free_shipping))
+    shopee_data=get_shopee_related_data(background_image, wholesale, bundle_deal, verified_label, free_shipping)
+    df_list.append(shopee_data)
 
     df_bag_of_words=pd.DataFrame()
     bag_of_words_file=score_lib.get_file_from_bucket(bucket, folder, category)
@@ -206,5 +208,15 @@ def process_product_from_link( data, bucket, folder, category):
             common_words_in_title.append(0)
         df_bag_of_words[word]=common_words_in_title
     df_list.append(df_bag_of_words)
+
+    title_related_column=[]
+    shopee_related_column=[]
+    for column in title_data:
+        title_related_column.append(column)
+    for column in df_bag_of_words:
+        title_related_column.append(column)
+    for column in shopee_data:
+        shopee_related_column.append(column)
     combined_df=pd.concat(df_list, axis=1)
-    return combined_df
+    # print(title_related_column)
+    return combined_df, title_related_column, shopee_related_column

@@ -93,16 +93,55 @@ def get_content_from_file(file):
     return content_list
 
 
-def score_product(product, sorted_features):
+def score_product(product, sorted_features,title_related_columns, shopee_related_columns):
     weight=100
     score=0
+    title_score=0
+    shopee_score=0
     for feature in sorted_features:
         if feature=='Cluster' or feature not in product.columns:
             continue
         weight/=2
         value=product[feature]
+        if feature in title_related_columns:
+            title_score+=value*weight
+        if feature in shopee_related_columns:
+            shopee_score+=value*weight
         score+=value*weight
-    return score
+    
+    return score, title_score, shopee_score
+
+# def score_product_only_by_title(product, sorted_features,title_related_columns):
+#     weight=100
+#     score=0
+#     for feature in sorted_features:
+#         if feature=='Cluster' or feature not in product.columns:
+#             continue
+#         elif feature in title_related_columns:
+            
+#             weight/=2
+#             value=product[feature]
+#             print(feature, weight, value[0])
+#             score+=value*weight
+#         else:
+#             continue
+#     return score
+
+# def score_product_only_by_shopee(product, sorted_features,shopee_related_columns):
+#     weight=100
+#     score=0
+#     for feature in sorted_features:
+#         if feature=='Cluster' or feature not in product.columns:
+#             continue
+#         elif feature in shopee_related_columns:
+#             weight/=2
+#             value=product[feature]
+#             print(feature, weight, value)
+#             score+=value*weight
+#         else:
+#            continue
+#     return score
+
 
 def get_score_of_product(url):
     ##### get product information from url
@@ -114,20 +153,28 @@ def get_score_of_product(url):
     print(category)
 
     ##### get processed product with bag of words
-    product=process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
+    product, title_related_columns, shopee_related_columns=process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
 
     ##### get sorted features for category by forward selection
     features=get_file_from_bucket(bucket, 'Forward_selection/', category)
     sorted_features=get_content_from_file(features)
 
     ##### final scoring of product
-    score=score_product(product, sorted_features)
-    return score[0]
+    score, title_score, shopee_score=score_product(product, sorted_features, title_related_columns, shopee_related_columns)
+    # shopee_only=score_product_only_by_shopee(product, sorted_features, shopee_related_columns)
+    # title_only=score_product_only_by_title(product, sorted_features, title_related_columns)
+    return title_related_columns, shopee_related_columns, score, title_score, shopee_score
 
 
 if __name__=='__main__':
-    test_url='https://shopee.sg/Vention-Ethernet-Cable-Cat7-Lan-High-Speed-10Gbps-SFTP-RJ-45-Network-Cable-Patch-Cable-8m-10m-for-Laptop-PC-i.95236751.1578425947?sp_atk=533f4b97-0ce8-4eb0-8d9a-99fc000c4b59&xptdk=533f4b97-0ce8-4eb0-8d9a-99fc000c4b59'
-    score=get_score_of_product(test_url)
-    print(score)
+    test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
+    title_col, shopee_col, score, title, shopee=get_score_of_product(test_url)
+    print('Title_attributes: ', title_col[0:10])
+    print('Shopee Attributes: ', shopee_col)
+    print('Score:', score)
+    print('Title: ', title)
+    print('Shopee: ', shopee)
+    # print('only t: ', c)
+    # print('only s: ', d)
 
 
