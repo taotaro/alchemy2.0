@@ -5,6 +5,7 @@ from flask_cors import CORS
 import pandas as pd
 import ast
 from library import score_lib
+import traceback
 
 app = Flask(__name__)
 CORS(app)
@@ -23,13 +24,15 @@ class Score(Resource):
 
   def post(self):
     if request.method == 'POST':
-      url = request.form.get('url')
-      if url:
+      body = request.get_json()
+      print(body['url'])
+      if "url" in body:
         try: 
-          final_score = score_lib.get_score_of_product(url)
+          final_score = score_lib.get_score_of_product(body['url'])
           print(final_score)
           return final_score
         except:
+          print(traceback.format_exc())
           return "url invalid"
       else:
         return "No url detected"
@@ -39,9 +42,9 @@ api.add_resource(Score, '/score') # entry point for Score
 
 if __name__ == '__main__':
     app.run(
-      host="0.0.0.0", 
+      # host="0.0.0.0", 
       port=5000, 
       debug=True, 
       threaded=True, 
-      ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
+      # ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
     )  # run our Flask app

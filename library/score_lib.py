@@ -107,8 +107,8 @@ def score_product(product, sorted_features):
 def get_score_of_product(url):
     ##### get product information from url
     shop_id, product_id = get_shopee_id(url)
-    product_information=api_search_item(shop_id, product_id)
-    data=product_information['data']
+    product_information = api_search_item(shop_id, product_id)
+    data = product_information['data']
     #forward selection data only available to main categories 
     category = get_category_names(product_information)[0]
     print(category)
