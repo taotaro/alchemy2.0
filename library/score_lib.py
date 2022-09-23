@@ -6,7 +6,6 @@ import time
 from bs4 import BeautifulSoup
 import traceback
 from . import constants
-# import constants
 from . import process_data_lib
 import json
 import oss2
@@ -163,17 +162,22 @@ def get_score_of_product(url):
     score, title_score, shopee_score=score_product(product, sorted_features, title_related_columns, shopee_related_columns)
     # shopee_only=score_product_only_by_shopee(product, sorted_features, shopee_related_columns)
     # title_only=score_product_only_by_title(product, sorted_features, title_related_columns)
-    return title_related_columns, shopee_related_columns, score, title_score, shopee_score
+
+    result = {
+      'title_col': title_related_columns[0:10],
+      'shopee_col': shopee_related_columns,
+      'score': score[0],
+      'title': title_score[0],
+      'shopee': shopee_score[0]
+    }
+
+    return result
 
 
 if __name__=='__main__':
     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
-    title_col, shopee_col, score, title, shopee=get_score_of_product(test_url)
-    print('Title_attributes: ', title_col[0:10])
-    print('Shopee Attributes: ', shopee_col)
-    print('Score:', score)
-    print('Title: ', title)
-    print('Shopee: ', shopee)
+    result=get_score_of_product(test_url)
+
     # print('only t: ', c)
     # print('only s: ', d)
 
