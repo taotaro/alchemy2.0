@@ -223,7 +223,7 @@ def process_product_from_link(data, bucket, folder, category):
     for column in shopee_data:
         shopee_related_column.append(column)
     combined_df=pd.concat(df_list, axis=1)
-    combined_df_tite_related=pd.concat(df_list_title_related, axis=1 )
+    combined_df_tite_related = pd.concat(df_list_title_related, axis=1 )
     # print(title_related_column)
     return combined_df, title_related_column, shopee_related_column, combined_df_tite_related
 
