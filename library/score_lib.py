@@ -6,7 +6,9 @@ import time
 from bs4 import BeautifulSoup
 import traceback
 from . import constants
+# import constants
 from . import process_data_lib
+# import process_data_lib
 import json
 import oss2
 
@@ -107,7 +109,7 @@ def score_product(product, sorted_features,title_related_columns, shopee_related
     for feature in sorted_features:
         if feature=='Cluster' or feature not in product.columns:
             continue
-        weight/=2
+        weight /= 2
         value=product[feature]
         if feature in title_related_columns:
             title_score+=value*weight
@@ -118,18 +120,26 @@ def score_product(product, sorted_features,title_related_columns, shopee_related
     return score, title_score, shopee_score
 
 def score_product_with_user_shopee_features(title_data, user_shopee_data, sorted_features):
-    weight=100
-    score=0
-    frames=[title_data, user_shopee_data]
+    weight = 100
+    score = 0
+    # shopee_data=pd.DataFrame(user_shopee_data, columns=['Transparent_background', 'Wholesale', 'Bundle_deal', 'Verified', 'Free_shipping'])
+    shopee_data=pd.DataFrame({
+        'Transparent_background':user_shopee_data[0],
+        'Wholesale':user_shopee_data[1],
+        'Bundle_deal':user_shopee_data[2],
+        'Verified':user_shopee_data[3],
+        'Free_shipping':user_shopee_data[4]
+    }, index=[0])
+    frames = [title_data, shopee_data]
     # print(sorted_features)
     product=pd.concat(frames, axis=1)
-    # print(product)
+    print(product)
     for feature in sorted_features:
         if feature not in product.columns:
             continue
-        weight/=2
-        value=product[feature]
-        score+=value*weight
+        weight /= 2
+        value = product[feature]
+        score += value * weight
 
     return score
 
@@ -211,13 +221,14 @@ if __name__=='__main__':
     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
     result=get_score_of_product(test_url)
     # print(result['score'], result['title'], result['shopee'])
-    new_shopee_features=pd.DataFrame({
-        'Transparent_background': 1,
-        'Wholesale':1,
-        'Bundle_deal':1,
-        'Verified':1,
-        'Free_shipping':1
-    }, index=[0])
+    # new_shopee_features=pd.DataFrame({
+    #     'Transparent_background': 1,
+    #     'Wholesale':1,
+    #     'Bundle_deal':1,
+    #     'Verified':1,
+    #     'Free_shipping':1
+    # }, index=[0])
+    new_shopee_features=[1,1,1,1,1]
     new_score=score_product_with_user_shopee_features(result['title_data'], new_shopee_features, result['sorted_features'])
     # print(new_score[0])
     # print('only t: ', c)
