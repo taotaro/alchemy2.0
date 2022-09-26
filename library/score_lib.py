@@ -123,16 +123,16 @@ def score_product_with_user_shopee_features(title_data, user_shopee_data, sorted
     weight = 100
     score = 0
     # shopee_data=pd.DataFrame(user_shopee_data, columns=['Transparent_background', 'Wholesale', 'Bundle_deal', 'Verified', 'Free_shipping'])
-    shopee_data=pd.DataFrame({
-        'Transparent_background':user_shopee_data[0],
-        'Wholesale':user_shopee_data[1],
-        'Bundle_deal':user_shopee_data[2],
-        'Verified':user_shopee_data[3],
-        'Free_shipping':user_shopee_data[4]
-    }, index=[0])
+    shopee_data = pd.DataFrame({
+        'Transparent_background': user_shopee_data[0],
+        'Wholesale': user_shopee_data[1],
+        'Bundle_deal': user_shopee_data[2],
+        'Verified': user_shopee_data[3],
+        'Free_shipping': user_shopee_data[4]
+    }, index = [0])
     frames = [title_data, shopee_data]
     # print(sorted_features)
-    product=pd.concat(frames, axis=1)
+    product = pd.concat(frames, axis=1)
     print(product)
     for feature in sorted_features:
         if feature not in product.columns:
@@ -185,20 +185,20 @@ def get_score_of_product(url):
     print(category)
 
     ##### get processed product with bag of words
-    product, title_related_columns, shopee_related_columns, title_data, shopee_data=process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
+    product, title_related_columns, shopee_related_columns, title_data, shopee_data = process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
 
     ##### get sorted features for category by forward selection
-    features=get_file_from_bucket(bucket, 'Forward_selection/', category)
-    sorted_features=get_content_from_file(features)
+    features = get_file_from_bucket(bucket, 'Forward_selection/', category)
+    sorted_features = get_content_from_file(features)
 
-    scores=get_file_from_bucket(bucket, 'Scores/', category)
-    scores_csv=get_content_from_csv_file(scores)
-    scores_list=scores_csv['Scores']
-    max_score=max(scores_list)
-    min_score=min(scores_list)
+    scores = get_file_from_bucket(bucket, 'Scores/', category)
+    scores_csv = get_content_from_csv_file(scores)
+    scores_list = scores_csv['Scores']
+    max_score = max(scores_list)
+    min_score = min(scores_list)
 
     ##### final scoring of product
-    score, title_score, shopee_score=score_product(product, sorted_features, title_related_columns, shopee_related_columns)
+    score, title_score, shopee_score = score_product(product, sorted_features, title_related_columns, shopee_related_columns)
     # shopee_only=score_product_only_by_shopee(product, sorted_features, shopee_related_columns)
     # title_only=score_product_only_by_title(product, sorted_features, title_related_columns)
 
