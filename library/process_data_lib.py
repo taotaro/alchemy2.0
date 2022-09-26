@@ -157,6 +157,7 @@ def get_shopee_related_data(background_image, wholesale, bundle_deal, verified_l
 def process_product_from_link(data, bucket, folder, category):
     ######## NEED TO CHECK PROPER NAMING OF ITEMS ON RESPONSE JSON FILE
     df_list=[]
+    df_list_title_related=[]
     title=data['name']
     if 'brand' in data:
         brand=data['brand']
@@ -174,6 +175,7 @@ def process_product_from_link(data, bucket, folder, category):
         rating_star=0
     title_data=get_title_related_data(title, brand, label, rating_star)
     df_list.append(title_data)
+    df_list_title_related.append(title_data)
 
     if 'transparent_background_image' in data:
         background_image=data['transparent_background_image']
@@ -210,6 +212,7 @@ def process_product_from_link(data, bucket, folder, category):
             common_words_in_title.append(0)
         df_bag_of_words[word]=common_words_in_title
     df_list.append(df_bag_of_words)
+    df_list_title_related.append(df_bag_of_words)
 
     title_related_column=[]
     shopee_related_column=[]
@@ -220,6 +223,7 @@ def process_product_from_link(data, bucket, folder, category):
     for column in shopee_data:
         shopee_related_column.append(column)
     combined_df=pd.concat(df_list, axis=1)
+    combined_df_tite_related=pd.concat(df_list_title_related, axis=1 )
     # print(title_related_column)
-    return combined_df, title_related_column, shopee_related_column, title_data, shopee_data
+    return combined_df, title_related_column, shopee_related_column, combined_df_tite_related
 
