@@ -103,6 +103,7 @@ def score_product(product, sorted_features,title_related_columns, shopee_related
     score=0
     title_score=0
     shopee_score=0
+    # print(product)
     for feature in sorted_features:
         if feature=='Cluster' or feature not in product.columns:
             continue
@@ -115,6 +116,22 @@ def score_product(product, sorted_features,title_related_columns, shopee_related
         score+=value*weight
     
     return score, title_score, shopee_score
+
+def score_product_with_user_shopee_features(title_data, user_shopee_data, sorted_features):
+    weight=100
+    score=0
+    frames=[title_data, user_shopee_data]
+    # print(sorted_features)
+    product=pd.concat(frames, axis=1)
+    # print(product)
+    for feature in sorted_features:
+        if feature not in product.columns:
+            continue
+        weight/=2
+        value=product[feature]
+        score+=value*weight
+
+    return score
 
 # def score_product_only_by_title(product, sorted_features,title_related_columns):
 #     weight=100
@@ -158,7 +175,7 @@ def get_score_of_product(url):
     print(category)
 
     ##### get processed product with bag of words
-    product, title_related_columns, shopee_related_columns=process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
+    product, title_related_columns, shopee_related_columns, title_data, shopee_data=process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
 
     ##### get sorted features for category by forward selection
     features=get_file_from_bucket(bucket, 'Forward_selection/', category)
@@ -182,7 +199,9 @@ def get_score_of_product(url):
       'title': title_score[0],
       'shopee': shopee_score[0],
       'max':max_score, 
-      'min':min_score
+      'min':min_score,
+      'sorted_features':sorted_features,
+      'title_data':title_data
     }
 
     return result
@@ -191,7 +210,16 @@ def get_score_of_product(url):
 if __name__=='__main__':
     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
     result=get_score_of_product(test_url)
-
+    # print(result['score'], result['title'], result['shopee'])
+    new_shopee_features=pd.DataFrame({
+        'Transparent_background': 1,
+        'Wholesale':1,
+        'Bundle_deal':1,
+        'Verified':1,
+        'Free_shipping':1
+    }, index=[0])
+    new_score=score_product_with_user_shopee_features(result['title_data'], new_shopee_features, result['sorted_features'])
+    # print(new_score[0])
     # print('only t: ', c)
     # print('only s: ', d)
 

@@ -152,7 +152,8 @@ def get_shopee_related_data(background_image, wholesale, bundle_deal, verified_l
     }, index=[0])
     return df_shopee_related
 
-def process_product_from_link( data, bucket, folder, category):
+
+def process_product_from_link(data, bucket, folder, category):
     ######## NEED TO CHECK PROPER NAMING OF ITEMS ON RESPONSE JSON FILE
     df_list=[]
     title=data['name']
@@ -219,4 +220,5 @@ def process_product_from_link( data, bucket, folder, category):
         shopee_related_column.append(column)
     combined_df=pd.concat(df_list, axis=1)
     # print(title_related_column)
-    return combined_df, title_related_column, shopee_related_column
+    return combined_df, title_related_column, shopee_related_column, title_data, shopee_data
+
