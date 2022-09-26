@@ -224,19 +224,8 @@ def get_score_of_product(url):
 if __name__=='__main__':
     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
     result=get_score_of_product(test_url)
-    print(result['score'], result['title'], result['shopee'])
-    # new_shopee_features=pd.DataFrame({
-    #     'Transparent_background': 1,
-    #     'Wholesale':1,
-    #     'Bundle_deal':1,
-    #     'Verified':1,
-    #     'Free_shipping':1
-    # }, index=[0])
     new_shopee_features=[1,1,1,1,1]
     new_score=score_product_with_user_shopee_features(result['title_data'], result['title_col'], new_shopee_features, result['sorted_features'])
-    print(new_score[0])
-    print(result['sorted_features'])
-    # print('only t: ', c)
-    # print('only s: ', d)
+
 
 
