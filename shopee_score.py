@@ -11,7 +11,7 @@ from library import score_lib
 import traceback
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/check', methods=['GET'])
 def health_check():
