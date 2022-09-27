@@ -45,7 +45,7 @@ def score_user():
     if body:
       try:
         new_score = score_lib.score_product_with_user_shopee_features(body['title_data_list'], body['title_columns'], body['user_shopee_data'], body['sorted_features'])
-        return new_score[0]
+        return new_score
       except:
         print(traceback.format_exc())
         return "input invalid"
