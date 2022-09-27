@@ -44,7 +44,7 @@ def score_user():
     body = request.get_json()
     if body:
       try:
-        new_score = score_lib.score_product_with_user_shopee_features(body['title_data'], body['new_shopee_features'], body['sorted_features'])
+        new_score = score_lib.score_product_with_user_shopee_features(body['title_data_list'], body['title_columns'], body['user_shopee_data'], body['sorted_features'])
         return new_score[0]
       except:
         print(traceback.format_exc())
