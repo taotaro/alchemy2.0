@@ -207,11 +207,14 @@ def get_score_of_product(url):
     # title_only=score_product_only_by_title(product, sorted_features, title_related_columns)
 
     result = {
+      'product_name': data['name'],
+      'product_category': get_category_names(product_information),
+      'image': data['image'],
       'title_col': title_related_columns,
       'shopee_col': shopee_related_columns,
       'score': score[0],
-      'title': title_score[0],
-      'shopee': shopee_score[0],
+      'title_score': title_score[0],
+      'shopee_score': shopee_score[0],
       'max':max_score, 
       'min':min_score,
       'sorted_features':sorted_features,

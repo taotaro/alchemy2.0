@@ -31,7 +31,6 @@ def score_link():
     if "url" in body:
       try: 
         final_score = score_lib.get_score_of_product(body['url'])
-        print(final_score)
         return final_score
       except:
         print(traceback.format_exc())
@@ -52,11 +51,27 @@ def score_user():
     else:
       return "No input detected"
 
+@app.route('/product', methods=['POST'])
+def product_info():
+    body = request.get_json()
+    print(body['url'])
+    if "url" in body:
+      try: 
+        shop_id, product_id = score_lib.get_shopee_id(body['url'])
+        product_information = score_lib.api_search_item(shop_id, product_id)
+        data = product_information['data']
+        return data
+      except:
+        print(traceback.format_exc())
+        return "url invalid"
+    else:
+      return "No url detected"
+
 if __name__ == '__main__':
     app.run(
-      host="0.0.0.0", 
+      # host="0.0.0.0", 
       port=5000, 
       debug=True, 
       threaded=True, 
-      ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
+      # ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
     )  # run our Flask app
