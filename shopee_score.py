@@ -69,9 +69,9 @@ def product_info():
 
 if __name__ == '__main__':
     app.run(
-      # host="0.0.0.0", 
+      host="0.0.0.0", 
       port=5000, 
       debug=True, 
       threaded=True, 
-      # ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
+      ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
     )  # run our Flask app
