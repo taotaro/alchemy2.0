@@ -65,7 +65,7 @@ def scraper():
         csv_path = shopee.create_file(time_str + keyword.replace(" ", "_"), "csv", path)
         json_path = shopee.create_file(time_str + keyword.replace(" ", "_"), "json", path)
         df_result.to_csv(csv_path)
-        shopee.to_json(json_path, json_result)
+        # shopee.to_json(json_path, json_result)
         shopee_class.to_db(df_result, category['catid'], keyword)
         logging.info(f"{keyword} saved in {path}")
 
@@ -82,7 +82,7 @@ def scraper():
                 csv_path_sub = shopee.create_file(time_str + keyword_sub.replace(" ", "_"), "csv", path_sub)
                 json_path_sub = shopee.create_file(time_str + keyword_sub.replace(" ", "_"), "json", path_sub)
                 df_result_sub.to_csv(csv_path_sub)
-                shopee.to_json(json_path_sub, json_result_sub)
+                # shopee.to_json(json_path_sub, json_result_sub)
                 shopee_class.to_db(df_result_sub, subcategory['parent_catid'], keyword_sub)
                 logging.info(f"{keyword_sub} saved in {path_sub}")
 
