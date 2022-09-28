@@ -155,30 +155,22 @@ def get_shopee_related_data(background_image, wholesale, bundle_deal, verified_l
     return df_shopee_related
 
 def get_rgb(rgb_data):
-    print(rgb_data)
-    
-    
     num=re.findall('\d*\.?\d+', rgb_data)
     if float(num[0])>200:
         red=1
     else:
         red=0
-       
     if float(num[0])>200:
         blue=1
     else:
         blue=0
-       
     if float(num[0])>200:
         green=1
     else:
         green=0
     return red, green, blue
 
-def get_height_and_width(height_width_data):
-
-  
-    
+def get_height_and_width(height_width_data):  
     if type(height_width_data)==str:
         num=re.findall(r'\d+', height_width_data)
         height=num[0]
@@ -203,13 +195,12 @@ def get_image_related_data(brightness, blurriness, contrast, text_area, angle, b
         'Red':red,
         'Green':green,
         'Blue':blue
-
     })
     return df_image_related
 
 
 def process_product_from_link(data, bucket, folder_bag_of_words, category, image_id, folder_image_data):
-    ######## NEED TO CHECK PROPER NAMING OF ITEMS ON RESPONSE JSON FILE
+
     print('image id: ', image_id)
     df_list=[]
     df_list_title_related=[]
@@ -252,10 +243,11 @@ def process_product_from_link(data, bucket, folder_bag_of_words, category, image
         free_shipping=data['show_free_shipping']
     else:
         free_shipping=False
-    # print((background_image, wholesale, bundle_deal, verified_label, free_shipping))
     shopee_data=get_shopee_related_data(background_image, wholesale, bundle_deal, verified_label, free_shipping)
     df_list.append(shopee_data)
 
+
+    ###### REQUIRED FOR IMAGE DATA (CURRENTLY NOT AVAILABLE FOR SINGLE PRODUCT--COMMENTED OUT)
     # image_data_file=score_lib.get_file_from_bucket(bucket, folder_image_data, category)
     # image_data=pd.read_csv(image_data_file, index_col=0)
     # brightness=image_data['Brightness']
@@ -269,8 +261,6 @@ def process_product_from_link(data, bucket, folder_bag_of_words, category, image
     # image_features_data=get_image_related_data(brightness, blurriness, contrast, text_area, angle, borders, height_width, rgb)
     # print(image_features_data)
     # df_list.append(image_features_data)
-
-
     
     df_bag_of_words=pd.DataFrame()
     bag_of_words_file=score_lib.get_file_from_bucket(bucket, folder_bag_of_words, category)
@@ -294,7 +284,7 @@ def process_product_from_link(data, bucket, folder_bag_of_words, category, image
     for column in shopee_data:
         shopee_related_column.append(column)
     combined_df=pd.concat(df_list, axis=1)
-    combined_df_tite_related = pd.concat(df_list_title_related, axis=1 )
-    # print(title_related_column)
+    combined_df_tite_related = pd.concat(df_list_title_related, axis = 1 )
+  
     return combined_df, title_related_column, shopee_related_column, combined_df_tite_related
 
