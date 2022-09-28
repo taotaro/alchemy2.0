@@ -13,6 +13,8 @@ import sys
 from library import shopee_lib as shopee
 import os
 from alive_progress import alive_bar
+import base64
+import io
 
 sys.path.insert(1, "YOLOv6")
 
@@ -25,9 +27,10 @@ class ProcessImageData:
         try:
             self.img = cv2.imread(imageLoc, 1)
         except:
-            self.img = imageLoc
-        self.manual_count = {}
+            nparr = np.fromstring(imageLoc, np.uint8)
+            self.img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         self.w, self.h, self.channels = self.img.shape
+        self.manual_count = {}
         self.total_pixels = self.w * self.h
 
     def count(self):
@@ -80,12 +83,13 @@ class ProcessImageData:
         return res
 
     def blur_check(self, image_path):
-        i = image_path
-        image_file = i
-
         # Doc anh tu file
-        image_path = cv2.imread(image_file)
-        gray = cv2.cvtColor(image_path, cv2.COLOR_BGR2GRAY)
+        try:
+            image_file = cv2.imread(image_path)
+        except:
+            nparr = np.fromstring(image_path, np.uint8)
+            image_file = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        gray = cv2.cvtColor(image_file, cv2.COLOR_BGR2GRAY)
 
         # Tinh toan muc do focus cua anh
         focus_measure = cv2.Laplacian(gray, cv2.CV_64F).var()
@@ -93,7 +97,10 @@ class ProcessImageData:
 
     def brightness_check(self, image_path):
         brightness_results = []
-        input_image = Image.open(image_path)
+        try:
+            input_image = Image.open(image_path)
+        except:
+            input_image = Image.open(io.BytesIO(image_path))
         # 1st approach
         image = input_image.convert("L")
         stat = ImageStat.Stat(image)
@@ -153,7 +160,11 @@ class ProcessImageData:
         return is_border
 
     def border_check(self, image_path):
-        image = cv2.imread(image_path)
+        try:
+            image = cv2.imread(image_path)
+        except:
+            nparr = np.fromstring(image_path, np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         width, height = image.shape[:2]
         left_side = self.pixel_difference_width(image, 1, int(width / 4), height)
         if not left_side:
@@ -175,9 +186,12 @@ class ProcessImageData:
             return 0
 
     def check_contrast(self, image_path):
-        i = image_path
         # read image
-        img = cv2.imread(i)
+        try:
+            img = cv2.imread(image_path)
+        except:
+            nparr = np.fromstring(image_path, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         # convert to LAB color space
         lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -202,7 +216,11 @@ class ProcessImageData:
         return average_contrast
 
     def contrast_calc(self, image_path):
-        img = cv2.imread(image_path)
+        try:
+            img = cv2.imread(image_path)
+        except:
+            nparr = np.fromstring(image_path, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         contrast = img_grey.std()
         return contrast
@@ -221,10 +239,14 @@ class ProcessImageData:
         return str(names[index])
 
     def text_extract(self, image_path):
-        image_width, image_height = cv2.imread(image_path).shape[:2]
+        try:
+            image_width, image_height = cv2.imread(image_path).shape[:2]
+        except:
+            nparr = np.fromstring(image_path, np.uint8)
+            image_path = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            image_width, image_height = image_path.shape[:2]
         total_num_pixels = image_width * image_height
-        img = image_path
-        img_1 = cv2.imread(image_path)
+        img_1 = img = image_path
 
         reader = easyocr.Reader(["en"])
         output = reader.readtext(
@@ -271,7 +293,11 @@ class ProcessImageData:
         return theta
 
     def orientation_calculation(self, image_path):
-        img = cv2.imread(image_path)
+        try:
+            img = cv2.imread(image_path)
+        except:
+            nparr = np.fromstring(image_path, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         textImg = img.copy()
 
         small = cv2.cvtColor(textImg, cv2.COLOR_BGR2GRAY)
@@ -397,8 +423,8 @@ def get_images_data(path):
 
 
 def run_image_processing(image_path):
-    images_data_file = get_images_data(image_path)
-    images_data_file.to_csv(f"{image_path}/images_features.csv")
+    images_data_result = get_images_data(image_path)
+    images_data_result.to_csv(f"{image_path}/images_features.csv")
 
     # images = glob.glob(f"{image_path}/*.jpg")
     # dict_image_content = {}
@@ -416,6 +442,55 @@ def run_image_processing(image_path):
 
     #     result = pd.concat([images_data_file, image_contents], axis=1)
     #     result.to_csv(f"{image_path}/image_result_data.csv")
+
+
+def get_image_data(name, image):
+    image_data = {
+        "ID_and_Image_Number": [],
+        "Brightness": [],
+        "Background_Color": [],
+        "Closest Color Name": [],
+        "20 common colors": [],
+        "Blurriness": [],
+        "Contrast (Michelson)": [],
+        "Contrast": [],
+        "Text": [],
+        "Text Covered Area": [],
+        "Text colors": [],
+        "Angle": [],
+        "Pixels (Height, Width)": [],
+        "Borders exist": [],
+    }
+
+    name = name.replace(".jpg", "")
+    image_file = Image.open(io.BytesIO(image))
+    try: 
+        width = image_file.width
+        height = image_file.height
+    except:
+        print(f"{name} broken")
+    height_and_width = [height, width]
+    process_image = ProcessImageData(image)
+    bg_color = process_image.detect()
+    image_text, text_covered_area, text_colors = process_image.text_extract(image)
+
+    image_data["Closest Color Name"] = process_image.convert_rgb_to_names(bg_color)
+    image_data["20 common colors"] = process_image.twenty_most_common_colors()
+    image_data["ID_and_Image_Number"] = name.split("/")[-1] + name.split("-number")[0]
+    
+    image_data["Brightness"] = process_image.brightness_check(image)
+    image_data["Background_Color"] = process_image.detect()
+    image_data["Blurriness"] = process_image.blur_check(image)
+    image_data["Contrast (Michelson)"] = process_image.check_contrast(image)
+    image_data["Contrast"] = process_image.contrast_calc(image)
+    image_data["Text"] = image_text
+    image_data["Text Covered Area"] = text_covered_area
+    image_data["Text colors"] = text_colors
+    image_data["Angle"] = process_image.orientation_calculation(image)
+    image_data["Pixels (Height, Width)"] = height_and_width
+    image_data["Borders exist"] = process_image.border_check(image)
+
+    return image_data
 
 
 if __name__ == "__main__":

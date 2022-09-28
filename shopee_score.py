@@ -8,7 +8,9 @@ from flask_cors import CORS
 import pandas as pd
 import ast
 from library import score_lib
+from library import image_lib
 import traceback
+import requests
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -60,6 +62,22 @@ def product_info():
         shop_id, product_id = score_lib.get_shopee_id(body['url'])
         product_information = score_lib.api_search_item(shop_id, product_id)
         data = product_information['data']
+        return data
+      except:
+        print(traceback.format_exc())
+        return "url invalid"
+    else:
+      return "No url detected"
+
+@app.route('/image', methods=['POST'])
+def image_feature():
+    body = request.get_json()
+    print(body['url'])
+    if "url" in body:
+      try: 
+        image_name = body['url'].split('/')[-1]
+        response = requests.get(body['url']).content # download image
+        data = image_lib.get_image_data(image_name, response) # process image
         return data
       except:
         print(traceback.format_exc())

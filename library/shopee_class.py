@@ -119,10 +119,9 @@ def save_product(dic, cat_id, cat_name):
         "historical_sold": dic["product.historical_sold"],
         "catid": dic["product.catid"],
     }
-    print(product_obj)
     if product_obj:
         add_products = product_obj.products.append(product)
-        old_product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=add_products)
+        old_product_obj = shopeeProduct.objects(ts=add_products['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=add_products)
     else:
         new_product_obj = shopeeProduct()
         new_product_obj.ts = dic["ts"]
