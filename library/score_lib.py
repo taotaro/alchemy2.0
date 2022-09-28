@@ -186,7 +186,7 @@ def get_score_of_product(url):
     print(category)
 
     ##### get processed product with bag of words
-    product, title_related_columns, shopee_related_columns, title_data = process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category, 'Image_features/')
+    product, title_related_columns, shopee_related_columns, title_data = process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category, data['image'],  'Image_features/')
     title_data_list=title_data.values.tolist()
     # print(title_data_list)
     # test=pd.DataFrame(title_data_list, columns=title_related_columns)
@@ -226,7 +226,7 @@ def get_score_of_product(url):
 
 if __name__=='__main__':
     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
-    result, data=get_score_of_product(test_url)
+    result=get_score_of_product(test_url)
     # print(result['score'], result['title'], result['shopee'])
     # new_shopee_features=pd.DataFrame({
     #     'Transparent_background': 1,
@@ -235,6 +235,7 @@ if __name__=='__main__':
     #     'Verified':1,
     #     'Free_shipping':1
     # }, index=[0])
+    print(result['score'])
     new_shopee_features=[1,1,1,1,1]
     new_score=score_product_with_user_shopee_features(result['title_data'], result['title_col'], new_shopee_features, result['sorted_features'])
     # print(new_score[0])

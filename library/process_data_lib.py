@@ -176,7 +176,7 @@ def get_rgb(rgb_data):
     return red, green, blue
 
 def get_height_and_width(height_width_data):
-    
+
   
     
     if type(height_width_data)==str:
@@ -208,8 +208,9 @@ def get_image_related_data(brightness, blurriness, contrast, text_area, angle, b
     return df_image_related
 
 
-def process_product_from_link(data, bucket, folder_bag_of_words, category, folder_image_data):
+def process_product_from_link(data, bucket, folder_bag_of_words, category, image_id, folder_image_data):
     ######## NEED TO CHECK PROPER NAMING OF ITEMS ON RESPONSE JSON FILE
+    print('image id: ', image_id)
     df_list=[]
     df_list_title_related=[]
     title=data['name']
@@ -255,19 +256,19 @@ def process_product_from_link(data, bucket, folder_bag_of_words, category, folde
     shopee_data=get_shopee_related_data(background_image, wholesale, bundle_deal, verified_label, free_shipping)
     df_list.append(shopee_data)
 
-    image_data_file=score_lib.get_file_from_bucket(bucket, folder_image_data, category)
-    image_data=pd.read_csv(image_data_file, index_col=0)
-    brightness=image_data['Brightness']
-    blurriness=image_data['Blurriness']
-    contrast=image_data['Contrast']
-    text_area=image_data['Text Covered Area']
-    angle=image_data['Angle']
-    borders=image_data['Borders exist']
-    height_width=image_data['Pixels (Height, Width)']
-    rgb=image_data['Background_Color'].astype(str)
-    image_features_data=get_image_related_data(brightness, blurriness, contrast, text_area, angle, borders, height_width, rgb)
-    print(image_features_data)
-    df_list.append(image_features_data)
+    # image_data_file=score_lib.get_file_from_bucket(bucket, folder_image_data, category)
+    # image_data=pd.read_csv(image_data_file, index_col=0)
+    # brightness=image_data['Brightness']
+    # blurriness=image_data['Blurriness']
+    # contrast=image_data['Contrast']
+    # text_area=image_data['Text Covered Area']
+    # angle=image_data['Angle']
+    # borders=image_data['Borders exist']
+    # height_width=image_data['Pixels (Height, Width)']
+    # rgb=image_data['Background_Color'].astype(str)
+    # image_features_data=get_image_related_data(brightness, blurriness, contrast, text_area, angle, borders, height_width, rgb)
+    # print(image_features_data)
+    # df_list.append(image_features_data)
 
 
     
