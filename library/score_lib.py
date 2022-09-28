@@ -209,7 +209,7 @@ def get_score_of_product(url):
     result = {
       'product_name': data['name'],
       'product_category': get_category_names(product_information),
-      'image': data['image'],
+      'image': "https://cf.shopee.sg/file/" + data['image'],
       'title_col': title_related_columns,
       'shopee_col': shopee_related_columns,
       'score': score[0],
