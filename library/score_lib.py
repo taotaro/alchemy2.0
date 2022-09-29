@@ -5,10 +5,10 @@ import requests
 import time
 from bs4 import BeautifulSoup
 import traceback
-from . import constants
-# import constants
-from . import process_data_lib
-# import process_data_lib
+# from . import constants
+import constants
+# from . import process_data_lib
+import process_data_lib
 import json
 import oss2
 
@@ -101,11 +101,10 @@ def get_content_from_csv_file(file):
 
 
 def score_product(product, sorted_features,title_related_columns, shopee_related_columns):
-    weight=100
-    score=0
-    title_score=0
-    shopee_score=0
-    # print(product)
+    weight = 90
+    score = 10
+    title_score = 0
+    shopee_score = 0
     for feature in sorted_features:
         if feature=='Cluster' or feature not in product.columns:
             continue
@@ -120,10 +119,9 @@ def score_product(product, sorted_features,title_related_columns, shopee_related
     return score, title_score, shopee_score
 
 def score_product_with_user_shopee_features(title_data_list, title_columns, user_shopee_data, sorted_features):
-    weight = 100
-    score = 0
+    weight = 90
+    score = 10
     title_data=pd.DataFrame(title_data_list, columns=title_columns)
-    # shopee_data=pd.DataFrame(user_shopee_data, columns=['Transparent_background', 'Wholesale', 'Bundle_deal', 'Verified', 'Free_shipping'])
     shopee_data = pd.DataFrame({
         'Transparent_background': user_shopee_data[0],
         'Wholesale': user_shopee_data[1],
@@ -132,7 +130,6 @@ def score_product_with_user_shopee_features(title_data_list, title_columns, user
         'Free_shipping': user_shopee_data[4]
     }, index = [0])
     frames = [title_data, shopee_data]
-    # print(sorted_features)
     product = pd.concat(frames, axis=1)
     print(product)
     for feature in sorted_features:
@@ -186,11 +183,9 @@ def get_score_of_product(url):
     print(category)
 
     ##### get processed product with bag of words
-    product, title_related_columns, shopee_related_columns, title_data = process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category)
+    product, title_related_columns, shopee_related_columns, title_data = process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category, data['image'],  'Image_features/')
     title_data_list=title_data.values.tolist()
-    # print(title_data_list)
-    # test=pd.DataFrame(title_data_list, columns=title_related_columns)
-    # print(test)
+    
     ##### get sorted features for category by forward selection
     features = get_file_from_bucket(bucket, 'Forward_selection/', category)
     sorted_features = get_content_from_file(features)
@@ -203,8 +198,7 @@ def get_score_of_product(url):
 
     ##### final scoring of product
     score, title_score, shopee_score = score_product(product, sorted_features, title_related_columns, shopee_related_columns)
-    # shopee_only=score_product_only_by_shopee(product, sorted_features, shopee_related_columns)
-    # title_only=score_product_only_by_title(product, sorted_features, title_related_columns)
+   
 
     result = {
       'product_name': data['name'],
@@ -229,6 +223,6 @@ if __name__=='__main__':
     result=get_score_of_product(test_url)
     new_shopee_features=[1,1,1,1,1]
     new_score=score_product_with_user_shopee_features(result['title_data'], result['title_col'], new_shopee_features, result['sorted_features'])
-
+  
 
 
