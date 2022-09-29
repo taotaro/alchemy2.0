@@ -5,10 +5,9 @@ import requests
 import time
 from bs4 import BeautifulSoup
 import traceback
-# from . import constants
-import constants
-# from . import process_data_lib
-import process_data_lib
+from . import constants
+from . import process_data_lib
+from . import image_lib
 import json
 import oss2
 
@@ -200,19 +199,32 @@ def get_score_of_product(url):
     score, title_score, shopee_score = score_product(product, sorted_features, title_related_columns, shopee_related_columns)
    
 
+    #### get image data
+    image_link =  "https://cf.shopee.sg/file/" + data['image']
+    response = requests.get(image_link).content # download image
+    image_data = image_lib.get_image_data(data['image'], response) # process image
+
     result = {
       'product_name': data['name'],
       'product_category': get_category_names(product_information),
-      'image': "https://cf.shopee.sg/file/" + data['image'],
+      'image': image_link,
       'title_col': title_related_columns,
       'shopee_col': shopee_related_columns,
       'score': score[0],
       'title_score': title_score[0],
       'shopee_score': shopee_score[0],
-      'max':max_score, 
-      'min':min_score,
+      'max': max_score, 
+      'min': min_score,
       'sorted_features':sorted_features,
-      'title_data':title_data_list
+      'title_data':title_data_list,
+      'brightness': image_data["Brightness"],
+      'blurriness': image_data["Blurriness"],
+      'contrast': image_data["Contrast"],
+      'text_covered_area': image_data["Text Covered Area"],
+      'angle': image_data["Angle"],
+      'borders': image_data["Borders exist"],
+      'height_and_width': image_data["Pixels (Height, Width)"],
+      'rgb': image_data["Background_Color"],
     }
 
     return result
