@@ -31,12 +31,8 @@ def score_link():
     body = request.get_json()
     print(body['url'])
     if "url" in body:
-      try: 
-        final_score = score_lib.get_score_of_product(body['url'])
-        return final_score
-      except:
-        print(traceback.format_exc())
-        return "url invalid"
+      final_score = score_lib.get_score_of_product(body['url'])
+      return final_score
     else:
       return "No url detected"
 
@@ -87,9 +83,9 @@ def image_feature():
 
 if __name__ == '__main__':
     app.run(
-      host="0.0.0.0", 
+      # host="0.0.0.0", 
       port=5000, 
       debug=True, 
       threaded=True, 
-      ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
+      # ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
     )  # run our Flask app
