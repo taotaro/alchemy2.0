@@ -1,4 +1,5 @@
 from enum import unique
+from math import prod
 import mongoengine as me
 import pandas as pd
 import numpy as np
@@ -97,31 +98,35 @@ class shopeeProduct(me.Document):
 
 def save_product(dic, cat_id, cat_name):
     # find object with same date and category to update
-    product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name)
-    product = {
-        "itemid": dic["product.itemid"],
-        "shopid": dic["product.shopid"],
-        "name": dic["product.name"],
-        "label_ids": dic["product.label_ids"],
-        "image": dic["product.image"],
-        "images": dic["product.images"],
-        "currency": dic["product.currency"],
-        "price": dic["product.price"],
-        "price_min": dic["product.price_min"],
-        "price_max": dic["product.price_max"],
-        "price_min_before_discount": dic["product.price_min_before_discount"],
-        "price_max_before_discount": dic["product.price_max_before_discount"],
-        "price_before_discount": dic["product.price_before_discount"],
-        "stock": dic["product.stock"],
-        "status": dic["product.status"],
-       "ctime": dic["product.ctime"],
-        "sold": dic["product.sold"],
-        "historical_sold": dic["product.historical_sold"],
-        "catid": dic["product.catid"],
-    }
+    product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).get()
+    
+    product = [{
+          "itemid": dic["product.itemid"],
+          "shopid": dic["product.shopid"],
+          "name": dic["product.name"],
+          "label_ids": dic["product.label_ids"],
+          "image": dic["product.image"],
+          "images": dic["product.images"],
+          "currency": dic["product.currency"],
+          "price": dic["product.price"],
+          "price_min": dic["product.price_min"],
+          "price_max": dic["product.price_max"],
+          "price_min_before_discount": dic["product.price_min_before_discount"],
+          "price_max_before_discount": dic["product.price_max_before_discount"],
+          "price_before_discount": dic["product.price_before_discount"],
+          "stock": dic["product.stock"],
+          "status": dic["product.status"],
+        "ctime": dic["product.ctime"],
+          "sold": dic["product.sold"],
+          "historical_sold": dic["product.historical_sold"],
+          "catid": dic["product.catid"],
+    }]
+
     if product_obj:
-        add_products = product_obj.products.append(product)
-        old_product_obj = shopeeProduct.objects(ts=add_products['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=add_products)
+        product_obj.update(add_to_set__products=product)
+        product_obj.save()
+        print("updated")
+        # old_product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=products.append(product))
     else:
         new_product_obj = shopeeProduct()
         new_product_obj.ts = dic["ts"]
@@ -129,12 +134,11 @@ def save_product(dic, cat_id, cat_name):
         new_product_obj.cat_name = cat_name
         new_product_obj.products = [product]
         new_product_obj.save()
+        print("saved")
     return
 
 # TO-DO: create proper time series collection
 def to_db(df, cat_id, cat_name):
-  with alive_bar(len(df)) as bar:
     for i in np.arange(len(df)):
         temp = correct_encoding(df.iloc[i])
         save_product(temp, cat_id, cat_name)
-    bar()
