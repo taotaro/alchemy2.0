@@ -201,8 +201,9 @@ def get_score_of_product(url):
 
     #### get image data
     image_link =  "https://cf.shopee.sg/file/" + data['image']
+    image_name = image_link.split('/')[-1]
     response = requests.get(image_link).content # download image
-    image_data = image_lib.get_image_data(data['image'], response) # process image
+    image_data = image_lib.get_image_data(image_name, response) # process image
 
     result = {
       'product_name': data['name'],
