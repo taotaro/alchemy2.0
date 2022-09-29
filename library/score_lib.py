@@ -197,18 +197,11 @@ def get_score_of_product(url):
 
     ##### final scoring of product
     score, title_score, shopee_score = score_product(product, sorted_features, title_related_columns, shopee_related_columns)
-   
-
-    #### get image data
-    image_link =  "https://cf.shopee.sg/file/" + data['image']
-    image_name = image_link.split('/')[-1]
-    response = requests.get(image_link).content # download image
-    image_data = image_lib.get_image_data(image_name, response) # process image
 
     result = {
       'product_name': data['name'],
       'product_category': get_category_names(product_information),
-      'image': image_link,
+      'image': "https://cf.shopee.sg/file/" + data['image'],
       'title_col': title_related_columns,
       'shopee_col': shopee_related_columns,
       'score': score[0],
@@ -218,14 +211,6 @@ def get_score_of_product(url):
       'min': min_score,
       'sorted_features':sorted_features,
       'title_data':title_data_list,
-      'brightness': image_data["Brightness"],
-      'blurriness': image_data["Blurriness"],
-      'contrast': image_data["Contrast"],
-      'text_covered_area': image_data["Text Covered Area"],
-      'angle': image_data["Angle"],
-      'borders': image_data["Borders exist"],
-      'height_and_width': image_data["Pixels (Height, Width)"],
-      'rgb': image_data["Background_Color"],
     }
 
     return result
