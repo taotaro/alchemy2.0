@@ -1,19 +1,14 @@
-from cgi import test
-from crypt import methods
-from inspect import trace
-from turtle import title
-from unittest import result
+
 from flask import Flask
 from flask_restful import request
 from flask_cors import CORS
 import pandas as pd
-import ast
 from library import score_lib
 from library import image_lib
 import traceback
 import requests
 
-from library.shopee_class import shopeeProduct
+from library.shopee_class import shopeeProduct, init_db
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -100,6 +95,7 @@ def get_category():
     return
 
 if __name__ == '__main__':
+    init_db()
     app.run(
       host="0.0.0.0", 
       port=5000, 
