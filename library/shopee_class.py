@@ -1,6 +1,7 @@
 from enum import unique
 from math import prod
 import mongoengine as me
+from pymongo import MongoClient
 import pandas as pd
 import numpy as np
 import logging
@@ -26,10 +27,26 @@ def init_db():
                     port=3717
                     )
         logging.debug('Connection to MongoDB: initialized')
-        print('Connection to MongoDB: initialized')
+        print('Connection to MongoDB through mongoengine: initialized')
     except:
         print('Connection to MongoDB unsuccessful')
     return
+
+
+def connect_db():
+    try:
+      client = MongoClient('mongodb://devuser:1000Sunny@externaltaotarodb1.mongodb.rds.aliyuncs.com:3717,externaltaotarodb2.mongodb.rds.aliyuncs.com:3717/alchemy?authSource=alchemy&replicaSet=mgset-28314303&readPreference=primary&ssl=false')
+      db = client.alchemy
+      db.create_collection('ts_shopee', 
+        timeseries={ 
+          'timeField': 'timestamp', 
+          'metaField': 'metadata', 
+          'granularity': 'days' 
+        })
+      print('Connection to MongoDB through pymongo: initialized')
+      return db
+    except:
+      print('Connection to MongoDB unsuccessful')
 
 
 def discon_db():
@@ -69,38 +86,107 @@ def correct_encoding(dictionary):
     return new
 
 
+# class shopeeProduct(me.Document):
+#     meta = {'db_alias': 'alchemy', 'collection': 'shopeeProducts'}
+#     ts = me.DateField()
+#     cat_id = me.IntField()
+#     cat_name = me.StringField()
+#     products = me.ListField()
+#     products.product = me.DictField()
+#     products.product.itemid = me.IntField(unique=True)
+#     products.product.shopid = me.IntField()
+#     products.product.name = me.StringField()
+#     products.product.label_ids = me.StringField()
+#     products.product.image = me.StringField()
+#     products.product.images = me.StringField()
+#     products.product.currency = me.StringField()
+#     products.product.price = me.StringField()
+#     products.product.price_min = me.StringField()
+#     products.product.price_max = me.StringField()
+#     products.product.price_min_before_discount = me.StringField()
+#     products.product.price_max_before_discount = me.StringField()
+#     products.product.price_before_discount = me.StringField()
+#     products.product.stock = me.StringField()
+#     products.product.status = me.StringField()
+#     products.product.ctime = me.StringField()
+#     products.product.sold = me.StringField()
+#     products.product.historical_sold = me.StringField()
+#     products.product.catid = me.StringField()
+
+
 class shopeeProduct(me.Document):
-    meta = {'db_alias': 'alchemy', 'collection': 'shopeeProducts'}
+    meta = {'db_alias': 'alchemy', 'collection': 'sProducts'}
     ts = me.DateField()
     cat_id = me.IntField()
     cat_name = me.StringField()
-    products = me.ListField()
-    products.product = me.DictField()
-    products.product.itemid = me.IntField(unique=True)
-    products.product.shopid = me.IntField()
-    products.product.name = me.StringField()
-    products.product.label_ids = me.StringField()
-    products.product.image = me.StringField()
-    products.product.images = me.StringField()
-    products.product.currency = me.StringField()
-    products.product.price = me.StringField()
-    products.product.price_min = me.StringField()
-    products.product.price_max = me.StringField()
-    products.product.price_min_before_discount = me.StringField()
-    products.product.price_max_before_discount = me.StringField()
-    products.product.price_before_discount = me.StringField()
-    products.product.stock = me.StringField()
-    products.product.status = me.StringField()
-    products.product.ctime = me.StringField()
-    products.product.sold = me.StringField()
-    products.product.historical_sold = me.StringField()
-    products.product.catid = me.StringField()
+    product = me.DictField()
+    product.itemid = me.IntField(unique=True)
+    product.shopid = me.IntField()
+    product.name = me.StringField()
+    product.label_ids = me.StringField()
+    product.image = me.StringField()
+    product.images = me.StringField()
+    product.currency = me.StringField()
+    product.price = me.StringField()
+    product.price_min = me.StringField()
+    product.price_max = me.StringField()
+    product.price_min_before_discount = me.StringField()
+    product.price_max_before_discount = me.StringField()
+    product.price_before_discount = me.StringField()
+    product.stock = me.StringField()
+    product.status = me.StringField()
+    product.ctime = me.StringField()
+    product.sold = me.StringField()
+    product.historical_sold = me.StringField()
+    product.catid = me.StringField()
+
+
+# def save_product(dic, cat_id, cat_name):
+#     # find object with same date and category to update
+#     try:
+#       product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).get()
+#     except:
+#       product_obj = {}
+
+#     product = [{
+#           "itemid": dic["product.itemid"],
+#           "shopid": dic["product.shopid"],
+#           "name": dic["product.name"],
+#           "label_ids": dic["product.label_ids"],
+#           "image": dic["product.image"],
+#           "images": dic["product.images"],
+#           "currency": dic["product.currency"],
+#           "price": dic["product.price"],
+#           "price_min": dic["product.price_min"],
+#           "price_max": dic["product.price_max"],
+#           "price_min_before_discount": dic["product.price_min_before_discount"],
+#           "price_max_before_discount": dic["product.price_max_before_discount"],
+#           "price_before_discount": dic["product.price_before_discount"],
+#           "stock": dic["product.stock"],
+#           "status": dic["product.status"],
+#           "ctime": dic["product.ctime"],
+#           "sold": dic["product.sold"],
+#           "historical_sold": dic["product.historical_sold"],
+#           "catid": dic["product.catid"],
+#     }]
+
+#     if product_obj != {}:
+#         success = product_obj.update(add_to_set__products=product)
+#         print(success)
+#         # old_product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=products.append(product))
+#     else:
+#         new_product_obj = shopeeProduct()
+#         new_product_obj.ts = dic["ts"]
+#         new_product_obj.cat_id = cat_id
+#         new_product_obj.cat_name = cat_name
+#         new_product_obj.products = [product]
+#         new_product_obj.save()
+#     return
 
 def save_product(dic, cat_id, cat_name):
-    # find object with same date and category to update
-    product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).get()
-    
-    product = [{
+    product_obj = shopeeProduct()
+
+    product = {
           "itemid": dic["product.itemid"],
           "shopid": dic["product.shopid"],
           "name": dic["product.name"],
@@ -116,25 +202,18 @@ def save_product(dic, cat_id, cat_name):
           "price_before_discount": dic["product.price_before_discount"],
           "stock": dic["product.stock"],
           "status": dic["product.status"],
-        "ctime": dic["product.ctime"],
+          "ctime": dic["product.ctime"],
           "sold": dic["product.sold"],
           "historical_sold": dic["product.historical_sold"],
           "catid": dic["product.catid"],
-    }]
+    }
 
-    if product_obj:
-        product_obj.update(add_to_set__products=product)
-        product_obj.save()
-        print("updated")
-        # old_product_obj = shopeeProduct.objects(ts=dic['ts'], cat_id=cat_id, cat_name=cat_name).update_one(products=products.append(product))
-    else:
-        new_product_obj = shopeeProduct()
-        new_product_obj.ts = dic["ts"]
-        new_product_obj.cat_id = cat_id
-        new_product_obj.cat_name = cat_name
-        new_product_obj.products = [product]
-        new_product_obj.save()
-        print("saved")
+    product_obj.ts = dic["ts"]
+    product_obj.cat_id = cat_id
+    product_obj.cat_name = cat_name
+    product_obj.product = product
+    product_obj.save()
+    print(f"Saved -- {dic['product.itemid']}")
     return
 
 # TO-DO: create proper time series collection
