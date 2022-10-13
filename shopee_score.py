@@ -94,6 +94,7 @@ def get_category():
     if "cat_name" in body:
       try:
         res = shopeeProduct.objects(cat_name=body['cat_name']).get()
+        return res
       except:
         print(traceback.format_exc())
     return
