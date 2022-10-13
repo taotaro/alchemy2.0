@@ -1,4 +1,3 @@
-
 from flask import Flask
 from flask_restful import request
 from flask_cors import CORS
@@ -7,6 +6,7 @@ from library import score_lib
 from library import image_lib
 import traceback
 import requests
+import json
 
 from library.shopee_class import shopeeProduct, init_db
 
@@ -88,18 +88,18 @@ def get_category():
     body = request.get_json()
     if "cat_name" in body:
       try:
-        res = shopeeProduct.objects(cat_name=body['cat_name']).get()
+        res = shopeeProduct.objects(cat_name=body['cat_name']).to_json()
         return res
       except:
         print(traceback.format_exc())
-    return
+        return "failed to get category"
 
 if __name__ == '__main__':
     init_db()
     app.run(
-      host="0.0.0.0", 
+      # host="0.0.0.0", 
       port=5000, 
       debug=True, 
       threaded=True, 
-      ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
+      # ssl_context=('/etc/letsencrypt/live/taotaroapp.com/fullchain.pem', '/etc/letsencrypt/live/taotaroapp.com/privkey.pem')
     )  # run our Flask app
