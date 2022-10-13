@@ -83,7 +83,7 @@ def scraper():
                 json_path_sub = shopee.create_file(time_str + keyword_sub.replace(" ", "_"), "json", path_sub)
                 df_result_sub.to_csv(csv_path_sub)
                 # shopee.to_json(json_path_sub, json_result_sub)
-                shopee_class.to_db(df_result_sub, subcategory['parent_catid'], keyword_sub)
+                shopee_class.to_db(df_result_sub, subcategory['catid'], keyword_sub)
                 logging.info(f"{keyword_sub} saved in {path_sub}")
 
     # logs to mark ending time
@@ -172,6 +172,7 @@ if __name__ == "__main__":
     if input_scrape:
         try:
             shopee_class.init_db()
+            # shopee_class.connect_db()
             scraper()
         except:
             print(f"SCRAPER FAILED\n{traceback.format_exc()}")

@@ -1,5 +1,6 @@
 from cgi import test
 from crypt import methods
+from inspect import trace
 from turtle import title
 from unittest import result
 from flask import Flask
@@ -11,6 +12,8 @@ from library import score_lib
 from library import image_lib
 import traceback
 import requests
+
+from library.shopee_class import shopeeProduct
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -84,6 +87,16 @@ def image_feature():
         return "url invalid"
     else:
       return "No url detected"
+
+@app.route('/category', methods=['POST'])
+def get_category():
+    body = request.get_json()
+    if "cat_name" in body:
+      try:
+        res = shopeeProduct.objects(cat_name=body['cat_name']).get()
+      except:
+        print(traceback.format_exc())
+    return
 
 if __name__ == '__main__':
     app.run(
