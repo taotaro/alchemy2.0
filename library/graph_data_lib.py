@@ -1,24 +1,42 @@
+from urllib import request
 import pymongo
 import pandas as pd
 import json
 import re
 from shopee_class import shopeeProduct
+import requests
+import mongoengine as me
 
-def get_data(uri, folder, file):
-  client = pymongo.MongoClient(uri)
-  db = client[folder]
-  col = db[file]
-  return col
+class productDataShopee(me.Document):
+    meta = {'db_alias': 'alchemy', 'collection': 'sProducts'}
+    ts = me.DateField()
+    cat_id = me.IntField()
+    cat_name = me.StringField()
+    product = me.DictField()
+
+def get_data_from_database(category):
+  try:
+    me.connect(alias='alchemy',
+                db='alchemy',
+                username='devuser',
+                password='1000Sunny',
+                authentication_source='alchemy',
+                host='externaltaotarodb1.mongodb.rds.aliyuncs.com',
+                port=3717
+              )
+    print('Connection to MongoDB: initialized')
+  except:
+    print('Connection to MongoDB unsuccessful')
+  res = productDataShopee.objects(cat_name=category).to_json()
+  return res
 
 
-def get_data_for_category(data, category):
-  print('looking')
+def get_data_cleaned(data):
   category_data = []
   for item in data:
-    if item['cat_name'] == category:
-     if 'item_rating' and 'discount' in item['product']:
+    if 'item_rating' and 'discount' in item['product']:
       category_data.append(item)
-  print('done')
+  
   return category_data
 
 def get_data_for_scatter_plot(data):
@@ -62,7 +80,7 @@ def get_data_for_bar_revenue(data):
   for item in data:
     new_data = {}
     new_data['product'] = item['product']['itemid']
-    new_data['revenue'] = item['product']['sold'] * i['product']['price'] / 100000
+    new_data['revenue'] = item['product']['sold'] * item['product']['price'] / 100000
     data_updated.append(new_data)
   json_data = json.dumps(data_updated)
   return json_data
@@ -92,10 +110,11 @@ def get_data_for_pie_chart(data, name):
 
 
 ### MAIN FUNCTION
-def get_graph_data(client, category, product_name):
-  data = get_data(client, 'alchemy', 'sProducts')
-  category_data = get_data_for_category(data.find(), category)
-
+def get_graph_data(category, product_name):
+  data = get_data_from_database(category)
+  data_in_json = json.loads(data)
+  category_data = get_data_cleaned(data_in_json)
+  
   # remove none values
   for item in category_data:
     for key in item['product']:
@@ -103,7 +122,7 @@ def get_graph_data(client, category, product_name):
         item['product'].update({ key : 0 })
       else:
         continue
-      
+
   scatter_data = get_data_for_scatter_plot(category_data)
   bar_data = get_data_for_bar_graph(category_data)
   swarm_data = get_data_for_swarm_graph(category_data)
@@ -117,13 +136,12 @@ def get_graph_data(client, category, product_name):
 
 
 if __name__ == "__main__":
-
-
-  # client = "mongodb://root:1000Sunny@externaltaotarodb1.mongodb.rds.aliyuncs.com:3717,externaltaotarodb2.mongodb.rds.aliyuncs.com:3717/admin?authSource=admin&replicaSet=mgset-28314303&readPreference=primary&ssl=false"
-  # test_product = 'Athena Crop Top'
-  # test_scatter, test_bar, test_swarm, test_revenue, test_pie=get_graph_data(client, 'Tops', test_product)
+  
+  test_product = 'Athena Crop Top'
+  test_scatter, test_bar, test_swarm, test_revenue, test_pie=get_graph_data("Tops", test_product)
+  # print(test_pie)
   # print(test_bar, test_swarm, test_pie, test_revenue)
-  test= shopeeProduct()
+
 
 
   
