@@ -108,6 +108,20 @@ def get_data_for_pie_chart(data, name):
   json_data = json.dumps(data_updated)
   return json_data
 
+def get_product_specifications(data, name):
+  user_data = {}
+  for item in data:
+    if item['product']['name'] == name:
+      user_data['sales'] = item['product']['sold']
+      user_data['rating'] = item['product']['item_rating']['rating_star']
+      user_data['revenue'] = item['product']['sold'] * item['product']['price'] / 100000
+      user_data['likes'] = item['product']['liked_count']
+    
+  json_data = json.dumps(user_data)
+  return json_data
+  
+
+
 
 ### MAIN FUNCTION
 def get_graph_data(category, product_name):
@@ -129,7 +143,9 @@ def get_graph_data(category, product_name):
   revenue_data = get_data_for_bar_revenue(category_data)
   pie_data = get_data_for_pie_chart(category_data, product_name)
 
-  return scatter_data, bar_data, swarm_data, revenue_data, pie_data
+  product_specs = get_product_specifications(category_data, product_name)
+
+  return scatter_data, bar_data, swarm_data, revenue_data, pie_data, product_specs
   
 
 
@@ -138,7 +154,7 @@ def get_graph_data(category, product_name):
 if __name__ == "__main__":
   
   test_product = 'Athena Crop Top'
-  test_scatter, test_bar, test_swarm, test_revenue, test_pie=get_graph_data("Tops", test_product)
+  test_scatter, test_bar, test_swarm, test_revenue, test_pie, test_specs=get_graph_data("Tops", test_product)
   # print(test_pie)
   # print(test_bar, test_swarm, test_pie, test_revenue)
 
