@@ -94,6 +94,20 @@ def get_category():
         print(traceback.format_exc())
         return "failed to get category"
 
+@app.route('/score/scrape', methods=['POST'])
+def score_scraped_product():
+    body = request.get_json()
+    print(body['url'])
+    if "url" in body:
+      try: 
+        final_score = score_lib.get_score_of_scraped_product(body['url'])
+        return final_score
+      except:
+        print(traceback.format_exc())
+        return "product not yet scraped"
+    else:
+      return "No url detected"
+
 if __name__ == '__main__':
     init_db()
     app.run(

@@ -6,10 +6,16 @@ import time
 from bs4 import BeautifulSoup
 import traceback
 from . import constants
+# import constants
 from . import process_data_lib
-from . import image_lib
+# import process_data_lib
+# from . import image_lib
+# import image_lib
 import json
 import oss2
+# from graph_data_lib import productDataShopee
+from library.graph_data_lib import productDataShopee
+import mongoengine as me
 
 auth=oss2.Auth(constants.ACCESS_KEY_ID, constants.ACCESS_KEY_SECRET)
 bucket=oss2.Bucket(auth, constants.ENDPOINT, constants.BUCKET)
@@ -40,7 +46,7 @@ def api_search_item(shop_id, product_id):
     #   - response: website's successful 200 response
     # '''
 
-    url = f"https://shopee.sg/api/v4/item/get?shopid={shop_id}&itemid={product_id}"
+    url = "https://shopee.sg/api/v4/item/get?shopid={shop_id}&itemid={product_id}"
 
     payload = {}
     headers = {"Cookie": constants.COOKIE_1}
@@ -215,12 +221,82 @@ def get_score_of_product(url):
 
     return result
 
+def get_data_from_database(product_id):
+  try:
+    me.connect(alias='alchemy',
+                db='alchemy',
+                username='devuser',
+                password='1000Sunny',
+                authentication_source='alchemy',
+                host='externaltaotarodb1.mongodb.rds.aliyuncs.com',
+                port=3717
+              )
+    print('Connection to MongoDB: initialized')
+  except:
+    print('Connection to MongoDB unsuccessful')
+  res = productDataShopee.objects(product__itemid=product_id).to_json()
+  return res
+
+
+
+def get_score_of_scraped_product(url):
+    shop_id, product_id = get_shopee_id(url)
+    # print('product id: ', type(product_id))
+    resp = get_data_from_database(int(product_id))
+    # print('response: ', resp['cat_name'])
+    response = json.loads(resp)[0]
+    # print(response['cat_name'])
+    category = response['cat_name'].replace(" ", "_")
+    print('category: ', category)
+    data = response['product']
+    product, title_related_columns, shopee_related_columns, title_data = process_data_lib.process_product_from_link(data, bucket, 'Bag_of_words/', category, data['image'],  'Image_features/')
+    title_data_list=title_data.values.tolist()
+    features = get_file_from_bucket(bucket, 'Forward_selection/', category)
+    sorted_features = get_content_from_file(features)
+
+    scores = get_file_from_bucket(bucket, 'Scores/', category)
+    scores_csv = get_content_from_csv_file(scores)
+    scores_list = scores_csv['Scores']
+    max_score = max(scores_list)
+    min_score = min(scores_list)
+
+    ##### final scoring of product
+    score, title_score, shopee_score = score_product(product, sorted_features, title_related_columns, shopee_related_columns)
+
+    result = {
+      'product_name': data['name'],
+      'product_category': category,
+      'image': "https://cf.shopee.sg/file/" + data['image'],
+      'title_col': title_related_columns,
+      'shopee_col': shopee_related_columns,
+      'score': score[0],
+      'title_score': title_score[0],
+      'shopee_score': shopee_score[0],
+      'max': max_score, 
+      'min': min_score,
+      'sorted_features':sorted_features,
+      'title_data':title_data_list,
+    }
+
+    return result
+
 
 if __name__=='__main__':
-    test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
-    result=get_score_of_product(test_url)
+    # test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
+    test_url='https://shopee.sg/Giordano-Women-6-Inch-180%C2%BA-Shorts-i.309959293.7753907865'
+    result=get_score_of_scraped_product(test_url)
+    print(result['score'])
     new_shopee_features=[1,1,1,1,1]
     new_score=score_product_with_user_shopee_features(result['title_data'], result['title_col'], new_shopee_features, result['sorted_features'])
+    print(new_score)
+  
+
+
+# if __name__=='__main__':
+#     test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
+#     result=get_score_of_product(test_url)
+#     new_shopee_features=[1,1,1,1,1]
+#     new_score=score_product_with_user_shopee_features(result['title_data'], result['title_col'], new_shopee_features, result['sorted_features'])
   
 
 

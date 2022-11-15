@@ -3,7 +3,7 @@ import pymongo
 import pandas as pd
 import json
 import re
-from shopee_class import shopeeProduct
+from library.shopee_class import shopeeProduct
 import requests
 import mongoengine as me
 
