@@ -5,9 +5,11 @@ import requests
 import time
 from bs4 import BeautifulSoup
 import traceback
-from . import constants
-from . import process_data_lib
-from . import image_lib
+# from . import constants
+# from . import process_data_lib
+import constants
+import process_data_lib
+# import image_lib
 import json
 import oss2
 
@@ -175,7 +177,9 @@ def score_product_with_user_shopee_features(title_data_list, title_columns, user
 def get_score_of_product(url):
     ##### get product information from url
     shop_id, product_id = get_shopee_id(url)
+    print('product id: ', product_id)
     product_information = api_search_item(shop_id, product_id)
+    print('product info: ', product_information)
     data = product_information['data']
     #forward selection data only available to main categories 
     category = get_category_names(product_information)[0]
@@ -217,7 +221,8 @@ def get_score_of_product(url):
 
 
 if __name__=='__main__':
-    test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
+    # test_url='https://shopee.sg/NEXGARD-SPECTRA.AUTHENTIC.%E3%80%8B-i.253386617.4334047211?sp_atk=9584be10-ad35-4a62-9552-c117b1291458&xptdk=9584be10-ad35-4a62-9552-c117b1291458'
+    test_url='https://shopee.sg/Giordano-Women-6-Inch-180%C2%BA-Shorts-i.309959293.7753907865'
     result=get_score_of_product(test_url)
     new_shopee_features=[1,1,1,1,1]
     new_score=score_product_with_user_shopee_features(result['title_data'], result['title_col'], new_shopee_features, result['sorted_features'])
